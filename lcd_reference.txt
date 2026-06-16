@@ -1,0 +1,31 @@
+LP097QX1-SPC1  mechanical reference for case-mount design   (units mm)
+Source: datasheet p17 FRONT VIEW (printed 16/28). Geometry from PDF vector, calibrated to dimensioned outline.
+Accuracy: rect sizes = datasheet nominal; positions ~+/-0.2mm; hole centers ~+/-0.05mm relative.
+
+SIZES (datasheet table):
+  Module outline : 167.12(W) x 208.88(H)  [+/-0.50]   thickness 2.60 max
+  Bezel/polarizer: 151.608(W) x 201.01(H)
+  Active area    : 147.456(W) x 196.608(H)
+  Hole dia       : ~2.40  (4x mounting-lug holes)
+
+IMPORTANT: active/bezel area is OFFSET from module center by (-1.30,-0.89) mm (X right, Y up, front view as drawn) -- NOT centered.
+
+== DATUM A: origin = OUTLINE CENTER, X right, Y up  (file lcd_centerdatum.dxf) ==
+  OUTLINE  size 167.120 x 208.880  center=(-0.00,+0.00)
+  BEZEL    size 151.608 x 201.010  center=(-1.27,-0.86)
+  ACTIVE   size 147.456 x 196.608  center=(-1.30,-0.89)
+  HOLE TL  (-85.69,+99.49)  dia 2.39
+  HOLE TR  (+78.11,+106.58)  dia 2.40
+  HOLE BL  (-78.53,-105.43)  dia 2.40
+  HOLE BR  (+78.49,-107.32)  dia 2.39
+
+== DATUM B: origin = OUTLINE TOP-LEFT, X right, Y DOWN  (file lcd_cornerdatum.dxf) ==
+  OUTLINE  size 167.120 x 208.880  center=(+83.56,+104.44)
+  BEZEL    size 151.608 x 201.010  center=(+82.29,+105.30)
+  ACTIVE   size 147.456 x 196.608  center=(+82.26,+105.33)
+  HOLE TL  (-2.13,+4.95)  dia 2.39
+  HOLE TR  (+161.67,-2.14)  dia 2.40
+  HOLE BL  (+5.03,+209.87)  dia 2.40
+  HOLE BR  (+162.05,+211.76)  dia 2.39
+
+Lug ears: exact traced silhouettes (teardrop/gusset, asymmetric per corner). In STEP layer/solid ear thickness = full 2.60mm (keep-out). 2D ear outlines on DXF layer EARS.

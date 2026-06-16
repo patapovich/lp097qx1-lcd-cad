@@ -1,0 +1,11 @@
+# python venv (large CAD kernel)
+cqenv/
+__pycache__/
+*.log
+
+# scratch renders / intermediate crops at repo root (kept in images/ instead)
+/*.png
+
+# scratch intermediates
+_holes_raster.json
+_tabs.npy

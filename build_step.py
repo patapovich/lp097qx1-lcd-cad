@@ -5,14 +5,16 @@ Datum: origin = module-outline CENTER (X right, Y up). Z=0 rear face, +Z toward 
 Run inside the venv:  cqenv/bin/python build_step.py   ->  lcd_panel.step (+ .stl)
 
 Body & rect sizes = datasheet table. Lug ear silhouettes + hole centers = measured from the
-PDF vector drawing (see _ears.json, produced from the datasheet). Ear thickness = full module
-thickness (conservative keep-out); real metal ears are thinner at the rear.
+PDF vector drawing (see _ears.json). Lugs are modelled as thin flat sheet-metal tabs at the
+rear face (LUG_T thick), matching the datasheet side-view rear frame gauge (~0.3mm).
 """
 import json
 import cadquery as cq
 
 OUT_W, OUT_H, TH = 167.12, 208.88, 2.60
 HOLE_D = 2.40
+LUG_T = 0.30      # lug sheet-metal thickness (measured ~0.26-0.30mm rear frame gauge)
+LUG_Z = 0.0       # lug tabs sit on the rear face (Z 0..LUG_T)
 ACT_W, ACT_H, ACT_CX, ACT_CY, ACT_DEPTH = 147.456, 196.608, -1.30, -0.89, 0.20
 
 ears = json.load(open("_ears.json"))
@@ -34,7 +36,7 @@ def clean(poly, tol=0.03):
 
 for k, poly in polys.items():
     pts = clean(poly)
-    ear = cq.Workplane("XY").polyline(pts).close().extrude(TH)
+    ear = cq.Workplane("XY").workplane(offset=LUG_Z).polyline(pts).close().extrude(LUG_T)
     body = body.union(ear)
 
 # drill the 4 mounting holes through ears+body

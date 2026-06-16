@@ -28,4 +28,4 @@ IMPORTANT: active/bezel area is OFFSET from module center by (-1.30,-0.89) mm (X
   HOLE BL  (+5.03,+209.87)  dia 2.40
   HOLE BR  (+162.05,+211.76)  dia 2.39
 
-Lug ears: exact traced silhouettes (teardrop/gusset, asymmetric per corner). In STEP layer/solid ear thickness = full 2.60mm (keep-out). 2D ear outlines on DXF layer EARS.
+Lug ears: thin flat SHEET-METAL tabs (thickness 0.30mm, measured rear-frame gauge) lying on the REAR face (Z 0..0.30). Exact traced silhouettes (teardrop/gusset, asymmetric per corner). 2D outlines on DXF layer EARS; 3D as thin tabs fused to the body block.

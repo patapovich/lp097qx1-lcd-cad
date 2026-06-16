@@ -53,7 +53,13 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 DXF layers: `OUTLINE`, `BEZEL`, `ACTIVE`, `HOLES`, `HOLE_CENTERS`, `EARS`.
 
 ### Lug ear shapes
+Traced outlines (magenta) over the datasheet drawing:
+
 ![ear TL](images/ear_TL.png) ![ear TR](images/ear_TR.png) ![ear BL](images/ear_BL.png) ![ear BR](images/ear_BR.png)
+
+Lugs are **thin flat sheet-metal tabs (0.30 mm) on the rear face** — not full-thickness:
+
+![lug detail](images/lug_detail.png)
 
 ## Regenerate the 3D model
 
@@ -70,8 +76,8 @@ Or render the parametric source with OpenSCAD: `openscad -o lcd_panel.stl lcd_pa
 - Rectangle **sizes** = datasheet nominal values.
 - Hole positions: ≈ ±0.05 mm relative, ≈ ±0.15 mm absolute (drawing-scale limit).
 - Datasheet's own outline tolerance is ±0.5 mm.
-- STEP lug ears are full module thickness (2.60 mm) as a conservative keep-out; the real
-  metal ears are thinner at the rear.
+- Lug ears are modelled as **thin flat sheet-metal tabs (0.30 mm) at the rear face**
+  (Z 0..0.30), matching the datasheet side-view rear-frame gauge.
 
 ## Source
 

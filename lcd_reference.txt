@@ -28,4 +28,4 @@ IMPORTANT: active/bezel area is OFFSET from module center by (-1.30,-0.89) mm (X
   HOLE BL  (+5.03,+209.87)  dia 2.40
   HOLE BR  (+162.05,+211.76)  dia 2.39
 
-Lug ears: thin flat SHEET-METAL tabs (thickness 0.30mm, measured frame gauge). Per the datasheet side views they split across both faces: TR + BR on the FRONT/screen face (Z 2.30..2.60); TL + BL on the REAR face (Z 0..0.30). Exact traced silhouettes (teardrop/gusset, asymmetric per corner). 2D outlines on DXF layer EARS; 3D as thin tabs fused to the body block.
+Lug ears: thin flat SHEET-METAL tabs (thickness 0.30mm, measured frame gauge), ALL on the FRONT/screen face (Z 2.30..2.60) -- confirmed against the physical part. Exact traced silhouettes (teardrop/gusset, asymmetric per corner). 2D outlines on DXF layer EARS; 3D as thin tabs fused to the body block. Side (Z) section documented in lcd_sideprofile.dxf.

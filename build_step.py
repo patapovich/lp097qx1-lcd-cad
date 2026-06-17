@@ -5,9 +5,8 @@ Datum: origin = module-outline CENTER (X right, Y up). Z=0 rear face, +Z toward 
 Run inside the venv:  cqenv/bin/python build_step.py   ->  lcd_panel.step (+ .stl)
 
 Body & rect sizes = datasheet table. Lug ear silhouettes + hole centers = measured from the
-PDF vector drawing (see _ears.json). Lugs are thin flat sheet-metal tabs (LUG_T thick); per
-the datasheet side views they split across both faces: TR/BR on the FRONT (screen) plane,
-TL/BL on the REAR plane.
+PDF vector drawing (see _ears.json). Lugs are thin flat sheet-metal tabs (LUG_T thick) on the
+FRONT (screen) plane, Z (TH-LUG_T)..TH (all 4; user-confirmed from the physical part).
 """
 import json
 import cadquery as cq
@@ -15,7 +14,7 @@ import cadquery as cq
 OUT_W, OUT_H, TH = 167.12, 208.88, 2.60
 HOLE_D = 2.40
 LUG_T = 0.30      # lug sheet-metal thickness (measured ~0.26-0.30mm frame gauge)
-FRONT_EARS = {"TR", "BR"}   # these ears sit on the FRONT (screen) plane; TL/BL on the REAR
+FRONT_EARS = {"TL", "TR", "BL", "BR"}   # all 4 ears on the FRONT (screen) plane (user-confirmed)
 ACT_W, ACT_H, ACT_CX, ACT_CY, ACT_DEPTH = 147.456, 196.608, -1.30, -0.89, 0.20
 
 ears = json.load(open("_ears.json"))

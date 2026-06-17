@@ -32,8 +32,7 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 > ⚠️ The lug layout is **asymmetric** (not a mirror set). Lugs protrude 3–5 mm past the
 > 167.12 × 208.88 outline — your case must clear them.
 
-**Z plane:** the ears split across both faces — **TR & BR** sit on the **front** (screen)
-face (Z 2.30–2.60), **TL & BL** on the **rear** face (Z 0–0.30).
+**Z plane:** all 4 ears sit on the **front** (screen) face, Z 2.30–2.60 (thin 0.30 mm tabs).
 
 ![3D model](images/model_3d.png)
 
@@ -46,8 +45,9 @@ face (Z 2.30–2.60), **TL & BL** on the **rear** face (Z 0–0.30).
 | `lcd_panel.step` | 3D solid: body + exact teardrop/gusset lug ears + ⌀2.4 holes + active-area pocket |
 | `lcd_panel.stl` | mesh version of the above |
 | `lcd_panel.scad` | parametric OpenSCAD source (all dims as variables) |
-| `lcd_centerdatum.dxf` | 2D, origin = outline center, Y up |
-| `lcd_cornerdatum.dxf` | 2D, origin = outline top-left, Y down (drawing convention) |
+| `lcd_centerdatum.dxf` | 2D top view, origin = outline center, Y up |
+| `lcd_cornerdatum.dxf` | 2D top view, origin = outline top-left, Y down (drawing convention) |
+| `lcd_sideprofile.dxf` | side (Z) section: thickness 2.60, lug front plane, active recess |
 | `lcd_lugs.csv` | hole coordinates, both datums |
 | `lcd_reference.txt` | full numeric reference |
 | `build_step.py` | regenerates the STEP/STL (needs cadquery) |
@@ -62,8 +62,8 @@ Traced outlines (magenta) over the datasheet drawing:
 
 ![ear TL](images/ear_TL.png) ![ear TR](images/ear_TR.png) ![ear BL](images/ear_BL.png) ![ear BR](images/ear_BR.png)
 
-Lugs are **thin flat sheet-metal tabs (0.30 mm)** — not full-thickness. They sit on
-different faces: **TR/BR front** (screen side), **TL/BL rear** (back side).
+Lugs are **thin flat sheet-metal tabs (0.30 mm)** — not full-thickness — all on the
+**front** (screen-side) face.
 
 ## Regenerate the 3D model
 
@@ -80,8 +80,8 @@ Or render the parametric source with OpenSCAD: `openscad -o lcd_panel.stl lcd_pa
 - Rectangle **sizes** = datasheet nominal values.
 - Hole positions: ≈ ±0.05 mm relative, ≈ ±0.15 mm absolute (drawing-scale limit).
 - Datasheet's own outline tolerance is ±0.5 mm.
-- Lug ears are **thin flat sheet-metal tabs (0.30 mm)** split across faces per the
-  datasheet side views: **TR/BR front** (Z 2.30..2.60), **TL/BL rear** (Z 0..0.30).
+- Lug ears are **thin flat sheet-metal tabs (0.30 mm)**, all on the **front** (screen) face
+  (Z 2.30..2.60), confirmed against the physical part.
 
 ## Source
 

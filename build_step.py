@@ -15,6 +15,10 @@ OUT_W, OUT_H, TH = 167.12, 208.88, 2.60
 HOLE_D = 2.40
 LUG_T = 0.30      # lug sheet-metal thickness (measured ~0.26-0.30mm frame gauge)
 FRONT_EARS = {"TL", "TR", "BL", "BR"}   # all 4 ears on the FRONT (screen) plane (user-confirmed)
+# each ear's base edge (axis, edge coord, inward sign) — used to overlap the tab into the body
+# for a clean fused solid. The stored _ears.json polygons stay at the edge (clean for DXF).
+EAR_EDGE = {"TL": ("x", -167.12/2, +1), "TR": ("y", 208.88/2, -1),
+            "BL": ("y", -208.88/2, +1), "BR": ("y", -208.88/2, +1)}
 ACT_W, ACT_H, ACT_CX, ACT_CY, ACT_DEPTH = 147.456, 196.608, -1.30, -0.89, 0.20
 
 ears = json.load(open("_ears.json"))
@@ -34,8 +38,20 @@ def clean(poly, tol=0.03):
         out.pop()
     return out
 
+def overlap_base(pts, k, amt=1.0, tol=0.5):
+    """Push the tab's base verts ~amt mm into the body so the union fuses cleanly."""
+    ax, E, s = EAR_EDGE[k]
+    out = []
+    for x, y in pts:
+        if ax == "x" and ((s > 0 and x >= E - tol) or (s < 0 and x <= E + tol)):
+            x = E + s * amt
+        if ax == "y" and ((s > 0 and y >= E - tol) or (s < 0 and y <= E + tol)):
+            y = E + s * amt
+        out.append((x, y))
+    return out
+
 for k, poly in polys.items():
-    pts = clean(poly)
+    pts = clean(overlap_base(clean(poly), k))
     z0 = (TH - LUG_T) if k in FRONT_EARS else 0.0   # front (screen) face vs rear face
     ear = cq.Workplane("XY").workplane(offset=z0).polyline(pts).close().extrude(LUG_T)
     body = body.union(ear)

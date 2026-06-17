@@ -1,5 +1,5 @@
-// LP097QX1-SPC1 LCD module envelope. Lugs = thin FRONT sheet-metal tabs; rear FPC connector RIGHT edge.
-OUT_W=167.12; OUT_H=208.88; TH=2.60; HOLE_D=2.40; LUG_T=0.3;
+// LP097QX1-SPC1 LCD module. Outline corners rounded R=2.3. Lugs thin FRONT tabs; rear FPC connector RIGHT.
+OUT_W=167.12; OUT_H=208.88; TH=2.60; HOLE_D=2.40; LUG_T=0.3; OUTLINE_R=2.3;
 ACT_W=147.456; ACT_H=196.608; ACT_CX=-1.305; ACT_CY=-0.885; ACT_D=0.20;
 CONN=[58.0,83.56,26.0,44.0]; CONN_D=1.2;
 HOLES=[[-85.688,99.493],[78.111,106.583],[-78.533,-105.430],[78.486,-107.317]];
@@ -10,9 +10,10 @@ EARS=[
   [[73.135,-104.448],[80.515,-104.448],[80.491,-104.489],[80.491,-107.588],[80.409,-107.900],[80.229,-108.293],[79.984,-108.637],[79.730,-108.875],[79.517,-109.023],[79.223,-109.170],[79.026,-109.236],[78.715,-109.302],[78.224,-109.302],[77.913,-109.236],[77.553,-109.088],[77.226,-108.875],[77.152,-108.769],[76.735,-108.351],[73.225,-104.899],[73.225,-104.817],[73.159,-104.751],[73.159,-104.489]]
 ];
 $fn=96;
+module outline2d(){ offset(r=OUTLINE_R) square([OUT_W-2*OUTLINE_R, OUT_H-2*OUTLINE_R], center=true); }
 difference() {
   union() {
-    translate([-OUT_W/2,-OUT_H/2,0]) cube([OUT_W,OUT_H,TH]);
+    linear_extrude(TH) outline2d();
     for (p=EARS) translate([0,0,TH-LUG_T]) linear_extrude(LUG_T) polygon(p);
     translate([CONN[0],CONN[2],-CONN_D]) cube([CONN[1]-CONN[0],CONN[3]-CONN[2],CONN_D+0.2]);
   }

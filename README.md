@@ -16,7 +16,7 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 
 | feature | size (W × H) | center offset | notes |
 |---|---|---|---|
-| Module outline | 167.12 × 208.88 (±0.5) | (0, 0) | thickness **2.60 max** |
+| Module outline | 167.12 × 208.88 (±0.5) | (0, 0) | thickness **2.60 max**; corners **rounded R2.3** |
 | Bezel / polarizer | 151.608 × 201.01 | (−1.27, −0.86) | visible glass window |
 | Active area | 147.456 × 196.608 | (−1.30, −0.89) | **not centered** |
 

@@ -24,8 +24,10 @@ ACT_W, ACT_H, ACT_CX, ACT_CY, ACT_DEPTH = 147.456, 196.608, -1.30, -0.89, 0.20
 ears = json.load(open("_ears.json"))
 polys, holes = ears["polys"], ears["holes"]
 
-# module body
-body = cq.Workplane("XY").box(OUT_W, OUT_H, TH, centered=(True, True, False))   # Z 0..TH
+# module body — outline corners are rounded (R measured from drawing), not a sharp rectangle
+OUTLINE_R = 2.3   # module outline corner radius, measured from the drawing
+body = (cq.Workplane("XY").box(OUT_W, OUT_H, TH, centered=(True, True, False))
+        .edges("|Z").fillet(OUTLINE_R))   # Z 0..TH, 4 rounded vertical corners
 
 # exact lug ears (extrude traced silhouette, fuse to body)
 def clean(poly, tol=0.03):

@@ -3,7 +3,7 @@ Source: datasheet p17 FRONT VIEW (printed 16/28). Geometry from PDF vector, cali
 Accuracy: rect sizes = datasheet nominal; positions ~+/-0.2mm; hole centers ~+/-0.05mm relative.
 
 SIZES (datasheet table):
-  Module outline : 167.12(W) x 208.88(H)  [+/-0.50]   thickness 2.60 max ; corners R0.5 ; bottom-left corner chamfered (notch ~1.2)
+  Module outline : 167.12(W) x 208.88(H)  [+/-0.50]   thickness 2.60 max ; corners R0.5 ; NON-SQUARE bottom-left: bottom edge raised ~0.95mm (Y=-103.49) from X=-83.56 to X=-66, ramping down to the full bottom (-104.44) by X=-63.8
   Bezel/polarizer: 151.608(W) x 201.01(H)
   Active area    : 147.456(W) x 196.608(H)
   Hole dia       : ~2.40  (4x mounting-lug holes)

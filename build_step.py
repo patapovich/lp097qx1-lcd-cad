@@ -8,27 +8,43 @@ Body & rect sizes = datasheet table. Lug ear silhouettes + hole centers = measur
 PDF vector drawing (see _ears.json). Lugs are thin flat sheet-metal tabs (LUG_T thick) on the
 FRONT (screen) plane, Z (TH-LUG_T)..TH (all 4; user-confirmed from the physical part).
 """
-import json
+import json, math
 import cadquery as cq
 
 OUT_W, OUT_H, TH = 167.12, 208.88, 2.60
 HOLE_D = 2.40
 LUG_T = 0.30      # lug sheet-metal thickness (measured ~0.26-0.30mm frame gauge)
 FRONT_EARS = {"TL", "TR", "BL", "BR"}   # all 4 ears on the FRONT (screen) plane (user-confirmed)
-# each ear's base edge (axis, edge coord, inward sign) — used to overlap the tab into the body
-# for a clean fused solid. The stored _ears.json polygons stay at the edge (clean for DXF).
-EAR_EDGE = {"TL": ("x", -167.12/2, +1), "TR": ("y", 208.88/2, -1),
-            "BL": ("y", -208.88/2, +1), "BR": ("y", -208.88/2, +1)}
+OUTLINE_R = 0.5            # outline corner radius (small; outer corners are near-sharp)
+# Outline is NOT square: the bottom-left ~17mm is raised ~0.95mm (Y=BL_Y) then ramps down
+# to the full bottom (-OUT_H/2) over BL_RAMP. Measured from the drawing.
+BL_Y = -103.49
+BL_RAMP = (-66.0, -63.8)   # raised flat ends at X=-66, ramp reaches full bottom by X=-63.8
+# each ear's base edge (axis, edge coord, inward sign) for the build-time fusion overlap:
+EAR_EDGE = {"TL": ("x", -OUT_W/2, +1), "TR": ("y", OUT_H/2, -1),
+            "BL": ("y", BL_Y, +1), "BR": ("y", -OUT_H/2, +1)}
 ACT_W, ACT_H, ACT_CX, ACT_CY, ACT_DEPTH = 147.456, 196.608, -1.30, -0.89, 0.20
+
+def outline_poly(R, n=10):
+    """Outline: rounded corners (R) + raised bottom-left step + ramp. CCW from TR."""
+    HW, HH = OUT_W/2, OUT_H/2
+    p = []
+    def arc(cx, cy, a0, a1):
+        for i in range(n+1):
+            a = math.radians(a0 + (a1-a0)*i/n); p.append((cx+R*math.cos(a), cy+R*math.sin(a)))
+    arc(HW-R, HH-R, 0, 90)            # TR
+    arc(-HW+R, HH-R, 90, 180)         # TL
+    arc(-HW+R, BL_Y+R, 180, 270)      # BL (raised bottom)
+    p.append((BL_RAMP[0], BL_Y))      # raised flat -> ramp start
+    p.append((BL_RAMP[1], -HH))       # ramp down to full bottom
+    arc(HW-R, -HH+R, 270, 360)        # BR
+    return p
 
 ears = json.load(open("_ears.json"))
 polys, holes = ears["polys"], ears["holes"]
 
-# module body — outline corners are rounded (R measured from drawing), not a sharp rectangle
-OUTLINE_R = 0.5   # module outline corner radius (small; outer corners are near-sharp)
-BL_NOTCH = 1.2    # bottom-left corner chamfer/notch leg (detected from drawing, approximate)
-body = (cq.Workplane("XY").box(OUT_W, OUT_H, TH, centered=(True, True, False))
-        .edges("|Z").fillet(OUTLINE_R))   # Z 0..TH, 4 rounded vertical corners
+# module body — outline polygon (rounded corners + non-square raised bottom-left), extruded
+body = cq.Workplane("XY").polyline(outline_poly(OUTLINE_R)).close().extrude(TH)   # Z 0..TH
 
 # exact lug ears (extrude traced silhouette, fuse to body)
 def clean(poly, tol=0.03):
@@ -82,11 +98,6 @@ solid = body.val()
 bb = solid.BoundingBox()
 print(f"solids={len(body.solids().vals())}  volume={solid.Volume():.1f} mm^3")
 print(f"bbox X[{bb.xmin:.2f},{bb.xmax:.2f}] Y[{bb.ymin:.2f},{bb.ymax:.2f}] Z[{bb.zmin:.2f},{bb.zmax:.2f}]")
-# bottom-left corner notch (chamfer) — the BL outline corner is cut, per the drawing
-notch = (cq.Workplane("XY").workplane(offset=-CONN_DEPTH - 1)
-         .polyline([(-OUT_W/2 - 1, -OUT_H/2 - 1), (-OUT_W/2 + BL_NOTCH, -OUT_H/2 - 1),
-                    (-OUT_W/2 - 1, -OUT_H/2 + BL_NOTCH)]).close().extrude(TH + CONN_DEPTH + 2))
-body = body.cut(notch)
 
 cq.exporters.export(body, "lcd_panel.step")
 cq.exporters.export(body, "lcd_panel.stl")

@@ -1,33 +1,30 @@
 LP097QX1-SPC1  mechanical reference for case-mount design   (units mm)
-Source: datasheet p17 FRONT VIEW (printed 16/28). Geometry from PDF vector, calibrated to dimensioned outline.
-Accuracy: rect sizes = datasheet nominal; positions ~+/-0.2mm; hole centers ~+/-0.05mm relative.
+Source: datasheet p17 FRONT VIEW (printed 16/28). Geometry RE-TRACED from a colour-cleaned
+render (dimension lines/centerlines/active-reference stripped), self-calibrated to the outline.
+Accuracy: outline=datasheet nominal; hole centers ~+/-0.05mm relative; ears = traced silhouettes.
 
-SIZES (datasheet table):
-  Module outline : 167.12(W) x 208.88(H)  [+/-0.50]   thickness 2.60 max ; corners R0.5 ; NON-SQUARE bottom-left: bottom edge raised ~0.95mm (Y=-103.49) from X=-83.56 to X=-66, ramping down to the full bottom (-104.44) by X=-63.8
-  Bezel/polarizer: 151.608(W) x 201.01(H)
-  Active area    : 147.456(W) x 196.608(H)
-  Hole dia       : ~2.40  (4x mounting-lug holes)
+SIZES:
+  Module outline : 167.12(W) x 208.88(H)  [+/-0.50]   thickness 2.6 max ; corners R0.5
+     NON-SQUARE bottom-left: bottom edge raised to Y=-103.48 for X[-83.56,-65.8], ramps to full bottom (Y=-104.44) by X=-62.7
+  Bezel/polarizer: 151.608(W) x 201.01(H)   center (-1.27,-0.86)
+  Active area    : 147.456(W) x 196.608(H)   center (-1.30,-0.89)
+  Hole dia       : 2.4 nominal (4x mounting-lug holes)
 
-IMPORTANT: active/bezel area is OFFSET from module center by (-1.30,-0.89) mm (X right, Y up, front view as drawn) -- NOT centered.
+== DATUM A: origin = OUTLINE CENTER, X right, Y up  (lcd_centerdatum.dxf) ==
+  OUTLINE  size 167.120 x 208.880  center (+0.00,+0.00)
+  BEZEL    size 151.608 x 201.010  center (-1.27,-0.86)
+  ACTIVE   size 147.456 x 196.608  center (-1.30,-0.89)
+  HOLE TL  (-85.71,+99.56)  dia 2.4
+  HOLE BL  (-78.55,-105.50)  dia 2.4
+  HOLE BR  (+78.48,-107.34)  dia 2.4
+  HOLE TR  (+78.07,+106.59)  dia 2.4
 
-== DATUM A: origin = OUTLINE CENTER, X right, Y up  (file lcd_centerdatum.dxf) ==
-  OUTLINE  size 167.120 x 208.880  center=(-0.00,+0.00)
-  BEZEL    size 151.608 x 201.010  center=(-1.27,-0.86)
-  ACTIVE   size 147.456 x 196.608  center=(-1.30,-0.89)
-  HOLE TL  (-85.69,+99.49)  dia 2.39
-  HOLE TR  (+78.11,+106.58)  dia 2.40
-  HOLE BL  (-78.53,-105.43)  dia 2.40
-  HOLE BR  (+78.49,-107.32)  dia 2.39
+== DATUM B: origin = OUTLINE TOP-LEFT, X right, Y DOWN  (lcd_cornerdatum.dxf) ==
+  HOLE TL  (-2.15,+4.88)  dia 2.4
+  HOLE BL  (+5.01,+209.94)  dia 2.4
+  HOLE BR  (+162.04,+211.78)  dia 2.4
+  HOLE TR  (+161.63,-2.15)  dia 2.4
 
-== DATUM B: origin = OUTLINE TOP-LEFT, X right, Y DOWN  (file lcd_cornerdatum.dxf) ==
-  OUTLINE  size 167.120 x 208.880  center=(+83.56,+104.44)
-  BEZEL    size 151.608 x 201.010  center=(+82.29,+105.30)
-  ACTIVE   size 147.456 x 196.608  center=(+82.26,+105.33)
-  HOLE TL  (-2.13,+4.95)  dia 2.39
-  HOLE TR  (+161.67,-2.14)  dia 2.40
-  HOLE BL  (+5.03,+209.87)  dia 2.40
-  HOLE BR  (+162.05,+211.76)  dia 2.39
-
-Lug ears: thin flat SHEET-METAL tabs (thickness 0.30mm, measured frame gauge), ALL on the FRONT/screen face (Z 2.30..2.60) -- confirmed against the physical part. Exact traced silhouettes (teardrop/gusset, asymmetric per corner). 2D outlines on DXF layer EARS; 3D as thin tabs fused to the body block. Side (Z) section documented in lcd_sideprofile.dxf.
-
-Rear FPC connector: keep-out boss on the RIGHT long edge (center datum X ~+58..+83.56, Y ~+26..+44), protrudes ~1.2mm BEHIND the rear face (Z -1.20..0). Footprint/depth APPROXIMATE (measured from the rear view); verify against the physical part. DXF layer CONNECTOR (top view) + lcd_sideprofile.dxf.
+Lug ears: thin flat SHEET-METAL tabs (thickness 0.3mm), ALL on the FRONT/screen face (Z 2.3000000000000003..2.6).
+Exact traced silhouettes (teardrop/gusset, asymmetric per corner). DXF layer EARS; 3D = thin tabs fused to body.
+Rear FPC connector: keep-out boss on RIGHT long edge (X 58.0..83.56, Y 26.0..44.0), protrudes ~1.2mm BEHIND rear (Z -1.2..0). APPROXIMATE.

@@ -4,9 +4,13 @@ Mounting/mechanical geometry for the **LG Display LP097QX1-SPC1** 9.7" 2048×153
 panel (as used in iPad 3/4), extracted from the datasheet **FRONT VIEW** drawing for
 designing cases, bezels and mounts.
 
-Geometry was pulled from the datasheet PDF's vector drawing and calibrated to the
-dimensioned outline. Hole centers were cross-checked two independent ways (vector
-path-fit + 2400-DPI raster circle-fit) and agree to **< 0.03 mm**.
+Geometry was **re-traced from a colour-cleaned render** of the FRONT VIEW: the
+datasheet page is rasterized and every non-geometry marking (dimension lines,
+dash-dot centerlines, green active-area reference, page header) is stripped *by
+colour*, leaving only the black/grey object outline. The outline, 4 lug ears and
+holes are then traced from that clean image and self-calibrated to the
+167.12 × 208.88 outline. Hole centers cross-check against an independent
+dimension-line calibration to **< 0.1 mm**.
 
 ![2D overview](images/overview_2d.png)
 
@@ -16,7 +20,7 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 
 | feature | size (W × H) | center offset | notes |
 |---|---|---|---|
-| Module outline | 167.12 × 208.88 (±0.5) | (0, 0) | thickness **2.60 max**; corners **R0.5**; **bottom-left non-square** (bottom edge raised ~0.95mm then ramps down) |
+| Module outline | 167.12 × 208.88 (±0.5) | (0, 0) | thickness **2.60 max**; corners **R0.5**; **bottom-left non-square**: bottom edge raised to Y=−103.48 for X∈[−83.56,−65.8], ramps to full bottom (−104.44) by X=−62.7 |
 | Bezel / polarizer | 151.608 × 201.01 | (−1.27, −0.86) | visible glass window |
 | Active area | 147.456 × 196.608 | (−1.30, −0.89) | **not centered** |
 
@@ -24,10 +28,10 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 
 | lug | X | Y | ear |
 |---|---|---|---|
-| TL | −85.69 | +99.49 | teardrop, points **left** (hole 2.1 outside left edge) |
-| TR | +78.11 | +106.58 | gusset, points **up** (hole 2.1 outside top edge) |
-| BL | −78.53 | −105.43 | rounded tab, points **down** |
-| BR | +78.49 | −107.32 | gusset, points **down** |
+| TL | −85.71 | +99.55 | teardrop, points **left** (hole outside left edge) |
+| TR | +78.07 | +106.59 | gusset, points **up** (hole outside top edge) |
+| BL | −78.55 | −105.50 | teardrop, points **down** |
+| BR | +78.48 | −107.34 | teardrop, points **down** |
 
 > ⚠️ The lug layout is **asymmetric** (not a mirror set). Lugs protrude 3–5 mm past the
 > 167.12 × 208.88 outline — your case must clear them.
@@ -52,15 +56,18 @@ protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approxi
 | `lcd_sideprofile.dxf` | side (Z) section: thickness 2.60, lug front plane, active recess |
 | `lcd_lugs.csv` | hole coordinates, both datums |
 | `lcd_reference.txt` | full numeric reference |
-| `build_step.py` | regenerates the STEP/STL (needs cadquery) |
-| `parse_svg.py` | SVG vector-path parser used during extraction |
-| `_cal.json`, `_ears.json`, `_rects.json` | extracted geometry consumed by the build scripts |
+| `geometry.json` | **single source of truth** — clean-traced outline, ears, holes, bezel, Z, connector |
+| `build_step.py` | builds the STEP/STL from `geometry.json` (needs cadquery) |
+| `make_clean.py` | strips markings by colour + rasterizes the clean render |
+| `trace2..6.py`, `geom.py` | trace pipeline (silhouette → edges → ears → holes → `geometry.json`) |
+| `make_outputs.py` | regenerates the DXF/SCAD/CSV/reference/images |
+| `verify.py` | overlays `geometry.json` back on the clean render |
 | `LP097QX1-SPC1.pdf` | source datasheet (© LG Display) |
 
 DXF layers: `OUTLINE`, `BEZEL`, `ACTIVE`, `HOLES`, `HOLE_CENTERS`, `EARS`, `CONNECTOR`.
 
 ### Lug ear shapes
-Traced outlines (magenta) over the datasheet drawing:
+Traced silhouettes (red) + ⌀2.4 holes (green) over the colour-cleaned drawing:
 
 ![ear TL](images/ear_TL.png) ![ear TR](images/ear_TR.png) ![ear BL](images/ear_BL.png) ![ear BR](images/ear_BR.png)
 
@@ -71,16 +78,20 @@ Lugs are **thin flat sheet-metal tabs (0.30 mm)** — not full-thickness — all
 
 ```bash
 python3 -m venv cqenv
-cqenv/bin/pip install cadquery
-cqenv/bin/python build_step.py      # -> lcd_panel.step + lcd_panel.stl
+cqenv/bin/pip install cadquery cairosvg opencv-python-headless scipy
+cqenv/bin/python build_step.py      # geometry.json -> lcd_panel.step + lcd_panel.stl
+cqenv/bin/python make_outputs.py    # -> DXF / SCAD / CSV / reference / images
 ```
 
-Or render the parametric source with OpenSCAD: `openscad -o lcd_panel.stl lcd_panel.scad`.
+Re-trace from the PDF: `make_clean.py` → `trace2..6.py` → `geom.py` (writes `geometry.json`),
+then `verify.py` overlays the result on the clean render. Or render the parametric source with
+OpenSCAD: `openscad -o lcd_panel.stl lcd_panel.scad`.
 
 ## Accuracy
 
-- Rectangle **sizes** = datasheet nominal values.
-- Hole positions: ≈ ±0.05 mm relative, ≈ ±0.15 mm absolute (drawing-scale limit).
+- Outline = datasheet nominal (167.12 × 208.88); model self-calibrated to it.
+- Hole centers: ≈ ±0.05 mm relative, ≈ ±0.1 mm vs the independent dimension-line calibration.
+- Ear silhouettes are traced from the clean render (≈ ±0.1 mm, drawing-scale limit).
 - Datasheet's own outline tolerance is ±0.5 mm.
 - Lug ears are **thin flat sheet-metal tabs (0.30 mm)**, all on the **front** (screen) face
   (Z 2.30..2.60), confirmed against the physical part.

@@ -25,7 +25,8 @@ ears = json.load(open("_ears.json"))
 polys, holes = ears["polys"], ears["holes"]
 
 # module body — outline corners are rounded (R measured from drawing), not a sharp rectangle
-OUTLINE_R = 2.3   # module outline corner radius, measured from the drawing
+OUTLINE_R = 0.5   # module outline corner radius (small; outer corners are near-sharp)
+BL_NOTCH = 1.2    # bottom-left corner chamfer/notch leg (detected from drawing, approximate)
 body = (cq.Workplane("XY").box(OUT_W, OUT_H, TH, centered=(True, True, False))
         .edges("|Z").fillet(OUTLINE_R))   # Z 0..TH, 4 rounded vertical corners
 
@@ -81,6 +82,12 @@ solid = body.val()
 bb = solid.BoundingBox()
 print(f"solids={len(body.solids().vals())}  volume={solid.Volume():.1f} mm^3")
 print(f"bbox X[{bb.xmin:.2f},{bb.xmax:.2f}] Y[{bb.ymin:.2f},{bb.ymax:.2f}] Z[{bb.zmin:.2f},{bb.zmax:.2f}]")
+# bottom-left corner notch (chamfer) — the BL outline corner is cut, per the drawing
+notch = (cq.Workplane("XY").workplane(offset=-CONN_DEPTH - 1)
+         .polyline([(-OUT_W/2 - 1, -OUT_H/2 - 1), (-OUT_W/2 + BL_NOTCH, -OUT_H/2 - 1),
+                    (-OUT_W/2 - 1, -OUT_H/2 + BL_NOTCH)]).close().extrude(TH + CONN_DEPTH + 2))
+body = body.cut(notch)
+
 cq.exporters.export(body, "lcd_panel.step")
 cq.exporters.export(body, "lcd_panel.stl")
 print("wrote lcd_panel.step + lcd_panel.stl")

@@ -33,6 +33,8 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 > 167.12 × 208.88 outline — your case must clear them.
 
 **Z plane:** all 4 ears sit on the **front** (screen) face, Z 2.30–2.60 (thin 0.30 mm tabs).
+The **rear FPC connector** is a keep-out boss on the **right long edge** (Y ≈ +26..+44),
+protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approximate.
 
 ![3D model](images/model_3d.png)
 
@@ -55,7 +57,7 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 | `_cal.json`, `_ears.json`, `_rects.json` | extracted geometry consumed by the build scripts |
 | `LP097QX1-SPC1.pdf` | source datasheet (© LG Display) |
 
-DXF layers: `OUTLINE`, `BEZEL`, `ACTIVE`, `HOLES`, `HOLE_CENTERS`, `EARS`.
+DXF layers: `OUTLINE`, `BEZEL`, `ACTIVE`, `HOLES`, `HOLE_CENTERS`, `EARS`, `CONNECTOR`.
 
 ### Lug ear shapes
 Traced outlines (magenta) over the datasheet drawing:

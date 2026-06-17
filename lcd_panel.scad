@@ -1,8 +1,9 @@
 // LP097QX1-SPC1 LCD module envelope for case-mount design.
 // Lugs = thin flat sheet-metal tabs, ALL on the FRONT (screen) plane (user-confirmed).
-// Datum: origin = module-outline CENTER (X right, Y up). Z=0 rear, +Z toward screen. mm.
+// Rear FPC connector keep-out on the RIGHT long edge (approx). Datum: outline CENTER, Z=0 rear.
 OUT_W=167.12; OUT_H=208.88; TH=2.60; HOLE_D=2.40; LUG_T=0.3;
 ACT_W=147.456; ACT_H=196.608; ACT_CX=-1.305; ACT_CY=-0.885; ACT_D=0.20;
+CONN=[58.0,83.56,26.0,44.0]; CONN_D=1.2;   // [x0,x1,y0,y1] rear bump, depth behind rear
 HOLES=[[-85.688,99.493],[78.111,106.583],[-78.533,-105.430],[78.486,-107.317]];
 EARS=[
   [[-86.114,101.374],[-83.659,101.374],[-83.577,101.292],[-83.577,95.060],[-83.659,94.978],[-83.954,95.011],[-87.243,98.307],[-87.505,98.766],[-87.603,99.094],[-87.636,99.685],[-87.570,100.045],[-87.341,100.570],[-87.178,100.800],[-86.899,101.046],[-86.539,101.242]],
@@ -15,7 +16,8 @@ difference() {
   union() {
     translate([-OUT_W/2,-OUT_H/2,0]) cube([OUT_W,OUT_H,TH]);
     for (p=EARS) translate([0,0,TH-LUG_T]) linear_extrude(LUG_T) polygon(p);
+    translate([CONN[0],CONN[2],-CONN_D]) cube([CONN[1]-CONN[0],CONN[3]-CONN[2],CONN_D+0.2]); // FPC connector
   }
-  for (h=HOLES) translate([h[0],h[1],-1]) cylinder(d=HOLE_D,h=TH+2);
+  for (h=HOLES) translate([h[0],h[1],-CONN_D-1]) cylinder(d=HOLE_D,h=TH+CONN_D+2);
   translate([ACT_CX-ACT_W/2,ACT_CY-ACT_H/2,TH-ACT_D]) cube([ACT_W,ACT_H,ACT_D+1]);
 }

@@ -56,6 +56,14 @@ for k, poly in polys.items():
     ear = cq.Workplane("XY").workplane(offset=z0).polyline(pts).close().extrude(LUG_T)
     body = body.union(ear)
 
+# rear FPC connector keep-out boss (RIGHT long edge, upper-third; protrudes behind rear).
+# Footprint measured from the rear view (approximate); depth ~1.2mm behind the rear face.
+CONN_X = (58.0, 83.56); CONN_Y = (26.0, 44.0); CONN_DEPTH = 1.2
+conn = (cq.Workplane("XY").workplane(offset=-CONN_DEPTH)
+        .center((CONN_X[0]+CONN_X[1])/2, (CONN_Y[0]+CONN_Y[1])/2)
+        .rect(CONN_X[1]-CONN_X[0], CONN_Y[1]-CONN_Y[0]).extrude(CONN_DEPTH + 0.2))  # 0.2 overlap into body
+body = body.union(conn)
+
 # drill the 4 mounting holes through ears+body
 for k, (x, y) in holes.items():
     cutter = cq.Workplane("XY").center(x, y).circle(HOLE_D/2).extrude(TH + 2).translate((0, 0, -1))

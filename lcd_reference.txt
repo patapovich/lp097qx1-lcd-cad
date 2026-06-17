@@ -29,3 +29,5 @@ IMPORTANT: active/bezel area is OFFSET from module center by (-1.30,-0.89) mm (X
   HOLE BR  (+162.05,+211.76)  dia 2.39
 
 Lug ears: thin flat SHEET-METAL tabs (thickness 0.30mm, measured frame gauge), ALL on the FRONT/screen face (Z 2.30..2.60) -- confirmed against the physical part. Exact traced silhouettes (teardrop/gusset, asymmetric per corner). 2D outlines on DXF layer EARS; 3D as thin tabs fused to the body block. Side (Z) section documented in lcd_sideprofile.dxf.
+
+Rear FPC connector: keep-out boss on the RIGHT long edge (center datum X ~+58..+83.56, Y ~+26..+44), protrudes ~1.2mm BEHIND the rear face (Z -1.20..0). Footprint/depth APPROXIMATE (measured from the rear view); verify against the physical part. DXF layer CONNECTOR (top view) + lcd_sideprofile.dxf.

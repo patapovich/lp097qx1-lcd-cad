@@ -1,23 +1,25 @@
 // LP097QX1-SPC1 LCD module envelope for case-mount design.
-// Lugs = thin flat sheet-metal tabs at the rear face (matches datasheet side view).
+// Lugs = thin flat sheet-metal tabs; per the datasheet side views they split across faces:
+//   TR/BR on the FRONT (screen) plane,  TL/BL on the REAR plane.
 // Datum: origin = module-outline CENTER (X right, Y up). Z=0 rear, +Z toward screen. mm.
-// Convert: openscad -o lcd_panel.stl lcd_panel.scad   (FreeCAD imports .scad -> STEP)
-OUT_W=167.12; OUT_H=208.88; TH=2.60; HOLE_D=2.40;
-LUG_T=0.3; LUG_Z=0.0;   // lug sheet thickness + rear offset (measured ~0.3mm gauge)
+OUT_W=167.12; OUT_H=208.88; TH=2.60; HOLE_D=2.40; LUG_T=0.3;
 ACT_W=147.456; ACT_H=196.608; ACT_CX=-1.305; ACT_CY=-0.885; ACT_D=0.20;
 HOLES=[[-85.688,99.493],[78.111,106.583],[-78.533,-105.430],[78.486,-107.317]];
-EARS=[
+REAR_EARS=[
   [[-86.114,101.374],[-82.560,101.374],[-82.560,101.259],[-82.560,95.093],[-82.560,94.978],[-82.560,95.011],[-87.243,98.307],[-87.505,98.766],[-87.603,99.094],[-87.636,99.685],[-87.570,100.045],[-87.341,100.570],[-86.899,101.046],[-86.539,101.242]],
+  [[-81.106,-103.440],[-76.753,-103.440],[-76.639,-103.440],[-76.639,-105.555],[-76.835,-106.309],[-76.999,-106.604],[-77.309,-106.916],[-77.899,-107.211],[-78.717,-107.309],[-79.404,-107.145],[-79.830,-106.883],[-80.272,-106.309],[-81.221,-103.440]]
+];
+FRONT_EARS=[
   [[77.864,108.523],[78.486,108.490],[78.977,108.326],[79.435,108.031],[79.746,107.621],[79.910,107.228],[79.943,106.867],[80.041,106.605],[80.041,103.440],[79.926,103.440],[73.708,103.440],[73.593,103.440],[73.593,103.440],[76.784,108.031],[77.341,108.392]],
-  [[-81.106,-103.440],[-76.753,-103.440],[-76.639,-103.440],[-76.639,-105.555],[-76.835,-106.309],[-76.999,-106.604],[-77.309,-106.916],[-77.899,-107.211],[-78.717,-107.309],[-79.404,-107.145],[-79.830,-106.883],[-80.272,-106.309],[-81.221,-103.440]],
   [[73.348,-103.440],[80.286,-103.440],[80.401,-103.440],[80.401,-107.555],[80.172,-108.211],[79.795,-108.719],[79.108,-109.113],[78.323,-109.211],[77.930,-109.146],[77.472,-108.949],[73.298,-103.440],[73.233,-103.440]]
 ];
 $fn=96;
 difference() {
   union() {
-    translate([-OUT_W/2,-OUT_H/2,0]) cube([OUT_W,OUT_H,TH]);        // module body
-    for (p=EARS) translate([0,0,LUG_Z]) linear_extrude(LUG_T) polygon(p); // thin lug tabs at rear
+    translate([-OUT_W/2,-OUT_H/2,0]) cube([OUT_W,OUT_H,TH]);              // module body
+    for (p=REAR_EARS)  translate([0,0,0])        linear_extrude(LUG_T) polygon(p); // rear tabs
+    for (p=FRONT_EARS) translate([0,0,TH-LUG_T]) linear_extrude(LUG_T) polygon(p); // front tabs
   }
-  for (h=HOLES) translate([h[0],h[1],-1]) cylinder(d=HOLE_D,h=TH+2);     // mounting holes
-  translate([ACT_CX-ACT_W/2,ACT_CY-ACT_H/2,TH-ACT_D]) cube([ACT_W,ACT_H,ACT_D+1]); // active pocket ref
+  for (h=HOLES) translate([h[0],h[1],-1]) cylinder(d=HOLE_D,h=TH+2);          // mounting holes
+  translate([ACT_CX-ACT_W/2,ACT_CY-ACT_H/2,TH-ACT_D]) cube([ACT_W,ACT_H,ACT_D+1]); // active pocket
 }

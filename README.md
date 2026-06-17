@@ -32,7 +32,12 @@ Datum = module-outline **center**, X → right, Y → up (front view as drawn).
 > ⚠️ The lug layout is **asymmetric** (not a mirror set). Lugs protrude 3–5 mm past the
 > 167.12 × 208.88 outline — your case must clear them.
 
+**Z plane:** the ears split across both faces — **TR & BR** sit on the **front** (screen)
+face (Z 2.30–2.60), **TL & BL** on the **rear** face (Z 0–0.30).
+
 ![3D model](images/model_3d.png)
+
+![lug planes](images/lug_planes.png)
 
 ## Files
 
@@ -57,9 +62,8 @@ Traced outlines (magenta) over the datasheet drawing:
 
 ![ear TL](images/ear_TL.png) ![ear TR](images/ear_TR.png) ![ear BL](images/ear_BL.png) ![ear BR](images/ear_BR.png)
 
-Lugs are **thin flat sheet-metal tabs (0.30 mm) on the rear face** — not full-thickness:
-
-![lug detail](images/lug_detail.png)
+Lugs are **thin flat sheet-metal tabs (0.30 mm)** — not full-thickness. They sit on
+different faces: **TR/BR front** (screen side), **TL/BL rear** (back side).
 
 ## Regenerate the 3D model
 
@@ -76,8 +80,8 @@ Or render the parametric source with OpenSCAD: `openscad -o lcd_panel.stl lcd_pa
 - Rectangle **sizes** = datasheet nominal values.
 - Hole positions: ≈ ±0.05 mm relative, ≈ ±0.15 mm absolute (drawing-scale limit).
 - Datasheet's own outline tolerance is ±0.5 mm.
-- Lug ears are modelled as **thin flat sheet-metal tabs (0.30 mm) at the rear face**
-  (Z 0..0.30), matching the datasheet side-view rear-frame gauge.
+- Lug ears are **thin flat sheet-metal tabs (0.30 mm)** split across faces per the
+  datasheet side views: **TR/BR front** (Z 2.30..2.60), **TL/BL rear** (Z 0..0.30).
 
 ## Source
 

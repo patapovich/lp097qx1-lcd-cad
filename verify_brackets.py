@@ -19,10 +19,10 @@ HFW, HFH = FRAME_W / 2, FRAME_H / 2
 VIEW_CENTER = True
 SHIFT_X = -ACT["cx"] if VIEW_CENTER else 0.0
 SHIFT_Y = -ACT["cy"] if VIEW_CENTER else 0.0
-TOTAL_Z, LIP_Z, SLOT_Z, LIP_Y = 15.0, 1.0, TH + 0.3, 3.0
+TOTAL_Z, PRELOAD, LIP_Y = 15.0, 0.15, 3.0
 FIT_CLR, SEAT_CLR, POCKET_CLR, EAR_CLR, EAR_Z = 0.2, 0.1, 0.3, 1.5, 2.0
 LX = (FRAME_W - FIT_CLR) / 2
-FLANGE_Z0 = LIP_Z + SLOT_Z
+FLANGE_Z0 = TH - PRELOAD
 
 
 def ear_span(name):
@@ -58,7 +58,7 @@ for side in (+1, -1):
     yl, yh = sorted((lipInnerY, webInnerY))
     for x0, x1 in [(-LX, stopL), (stopR, LX)]:                                                 # end stops
         ax.add_patch(Rectangle((x0, yl), x1 - x0, yh - yl, fc="#ffd9a8", ec="#b5651d", lw=1.0))
-    ax.add_patch(Rectangle((stopL, yl), stopR - stopL, yh - yl, fc="#ffeccf", ec="#b5651d",    # lip over pocket
+    ax.add_patch(Rectangle((stopL, yl), stopR - stopL, yh - yl, fc="none", ec="#b5651d",        # rear shelf (behind panel)
                            lw=0.8, ls=":"))
     # ear pockets (white notch)
     for e in (["TL", "TR"] if side > 0 else ["BL", "BR"]):
@@ -82,21 +82,22 @@ ax.axvline(0, color="#2aa3d6", lw=4, alpha=0.5)            # glass plane (Z=0)
 ax.text(0, TOTAL_Z + 0.6, "glass", color="#2aa3d6", ha="center")
 ax.axvline(TOTAL_Z, color="0.4", lw=4, alpha=0.5)         # frame backing
 ax.text(TOTAL_Z, TOTAL_Z + 0.6, "frame back", color="0.4", ha="center")
-# panel cross section in Y-Z (front at Z=LIP_Z)
+# panel cross section in Y-Z (screen front on the glass at Z=0)
 pTop, pBot = HH + SHIFT_Y, -(HH - SHIFT_Y)
-ax.add_patch(Rectangle((LIP_Z, pBot), TH, pTop - pBot, fc="#cfe3ff", ec="#1f6fd0", label="panel"))
+ax.add_patch(Rectangle((0, pBot), TH, pTop - pBot, fc="#cfe3ff", ec="#1f6fd0", label="panel"))
+ax.axvline(FLANGE_Z0, color="#b5651d", lw=0.8, ls=":")
+ax.text(FLANGE_Z0, HFH + 2, f"shelf {FLANGE_Z0:.2f}\n(0.15 proud)", color="#b5651d", ha="center", fontsize=8)
 for side in (+1, -1):
     edgeY = side * (HH + side * SHIFT_Y)
     webInnerY = edgeY + side * SEAT_CLR; lipInnerY = edgeY - side * LIP_Y; wallY = side * HFH
     yl, yh = sorted((lipInnerY, wallY))
-    # lip + back wall + web drawn as Z-Y rectangles (note axes: x=Z, y=Y)
-    ax.add_patch(Rectangle((0, *sorted((webInnerY, wallY))[:1]), TOTAL_Z,
-                           abs(wallY - webInnerY), fc="#ffd9a8", ec="#b5651d"))           # web full Z
-    ax.add_patch(Rectangle((0, yl), LIP_Z, yh - yl, fc="#ffd9a8", ec="#b5651d"))           # front lip
+    # web (full Z, in the gap) + rear shelf (behind panel) as Z-Y rectangles (x=Z, y=Y)
+    ax.add_patch(Rectangle((0, sorted((webInnerY, wallY))[0]), TOTAL_Z,
+                           abs(wallY - webInnerY), fc="#ffd9a8", ec="#b5651d"))           # web full Z, on glass
     ax.add_patch(Rectangle((FLANGE_Z0, yl), TOTAL_Z - FLANGE_Z0, yh - yl,
-                           fc="#ffd9a8", ec="#b5651d"))                                     # back wall
+                           fc="#ffd9a8", ec="#b5651d"))                                     # rear shelf
 ax.set_xlim(-1.5, TOTAL_Z + 2); ax.set_ylim(-HFH - 4, HFH + 8)
 ax.set_xlabel("Z (mm)  0=glass -> 15=frame back"); ax.set_ylabel("Y (mm)")
-ax.set_title("Side section: lip(1) | panel slot(2.9) | back wall — total 15mm presses LCD to glass")
+ax.set_title("Side section: screen ON glass (Z0), rear shelf 0.15 proud presses LCD forward — total 15mm")
 fig.tight_layout(); fig.savefig("images/brackets_section.png", dpi=130); plt.close(fig)
 print("wrote images/brackets_section.png")

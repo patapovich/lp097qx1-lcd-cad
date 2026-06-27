@@ -94,10 +94,11 @@ OpenSCAD: `openscad -o lcd_panel.stl lcd_panel.scad`.
 
 ## Photo-frame mounting brackets
 
-Two **3D-printable C-channel brackets** that hold the panel **centered in a photo frame** whose
+Two **3D-printable back-press brackets** that hold the panel **centered in a photo frame** whose
 inner cavity is **182 (W) × 242 (H) mm**. They sit on the panel's **short sides** (top + bottom),
-friction-fit between the frame side walls, and a 15 mm-thick back wall presses the LCD forward
-against the frame glass.
+friction-fit between the frame side walls. There is **no lip in front of the panel** — the screen
+sits **flat on the frame glass**; a rear shelf set **0.15 mm proud** of the panel rear is pushed by
+the frame backing, holding the LCD lightly against the glass.
 
 They **center the VIEW (active) area, not the outline.** The active area is offset from the
 outline center by (−1.30, −0.89), so the panel is shifted (+1.30, +0.89) and the brackets are
@@ -110,8 +111,9 @@ sized to suit — the image lands in the frame center.
 | Bottom-bracket gap (Y-depth) | **17.45 mm** |
 | Left / right gap (open, no bracket) | 8.74 / 6.14 mm |
 | Bracket length (X, friction) | 181.8 mm (182 − 0.2) |
-| Total thickness (Z) | 15.0 mm = 1.0 lip + 2.9 panel slot + 11.1 back wall |
-| Front lip overhang onto border | 3.0 mm (clear of the active area) |
+| Total thickness (Z) | 15.0 mm (front on glass; rear shelf 2.45 → 15) |
+| Rear shelf preload | 0.15 mm proud of the 2.60 panel rear |
+| Rear shelf overhang onto border | 3.0 mm (clear of the active area) |
 
 Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. Each bracket has **ear-clearance pockets** for the
 lug tabs that protrude into its footprint (top: TL+TR, bottom: BL+BR). The two brackets are
@@ -120,14 +122,14 @@ lug tabs that protrude into its footprint (top: TL+TR, bottom: BL+BR). The two b
 ![bracket assembly](images/brackets_assembly.png)
 ![bracket section](images/brackets_section.png)
 
-**Print:** PLA/PETG, lay flat with the channel opening up — no supports. Slot is 2.9 mm for the
-2.60 mm panel edge. **Tune the fit** at the top of `build_brackets.py` / `brackets.scad`:
-`FIT_CLR` (frame friction), `SEAT_CLR`/`POCKET_CLR` (panel play), `LIP_Z`/`LIP_Y` (set to 0 for a
-pure back-press with the LCD directly on the glass). `VIEW_CENTER=False` centers the outline
-instead (equal 16.56 mm gaps).
+**Print:** PLA/PETG, lay flat — no supports. **Tune the fit** at the top of `build_brackets.py` /
+`brackets.scad`: `FIT_CLR` (frame friction), `SEAT_CLR`/`POCKET_CLR` (panel play), `PRELOAD`
+(forward press — raise for firmer glass contact), `LIP_Y` (rear-shelf grip). `VIEW_CENTER=False`
+centers the outline instead (equal 16.56 mm gaps).
 
-**Assemble:** lay the frame face-down on the glass, drop the panel in face-first, then push the
-top + bottom brackets into the end gaps so each channel captures a short edge; close the frame back.
+**Assemble:** lay the frame face-down on the glass, drop the panel in screen-first (it rests on the
+glass), push the top + bottom brackets into the end gaps so each rear shelf sits behind a short
+edge, then close the frame back — its clamping pushes the shelves and seats the LCD on the glass.
 
 ```bash
 cqenv/bin/python build_brackets.py     # -> bracket_top/bottom .step + .stl

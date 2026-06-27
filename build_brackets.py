@@ -7,9 +7,11 @@ forward against the frame glass. The VIEW (active) area is centered in the frame
 outline (active is offset from outline by (-1.30,-0.89), so the panel is shifted (+1.30,+0.89)).
 
 Frame coords here: origin = frame center, X right, Y up, Z = 0 at the glass, +Z back into
-the cavity. Each bracket is a C-channel:
-  front lip (Z 0..LIP_Z, on the glass) | panel slot (Z LIP_Z..LIP_Z+SLOT_Z) | back wall (..TOTAL_Z).
-The back wall (Z=TOTAL_Z) bottoms on the frame backing and pushes the panel forward.
+the cavity. Each bracket is an L / back-press section (no front lip — the screen sits flat on
+the glass):
+  web front at Z 0 on the glass | panel zone (Z 0..TH) open | rear shelf (Z TH-PRELOAD..TOTAL_Z).
+The rear shelf sits PRELOAD proud of the panel rear, so the frame backing pushes it -> LCD onto
+the glass. The back face (Z=TOTAL_Z) bottoms on the frame backing.
 
 Run: cqenv/bin/python build_brackets.py
  -> bracket_top.step/.stl, bracket_bottom.step/.stl
@@ -29,10 +31,9 @@ VIEW_CENTER = True                                           # center active are
 SHIFT_X = -ACT["cx"] if VIEW_CENTER else 0.0                # +1.30
 SHIFT_Y = -ACT["cy"] if VIEW_CENTER else 0.0                # +0.89
 
-TOTAL_Z = 15.0          # bracket thickness (glass -> frame backing)
-LIP_Z   = 1.0           # front lip thickness (sits on glass, over the border only)
-SLOT_Z  = TH + 0.3      # panel-edge slot height (2.9)
-LIP_Y   = 3.0           # how far the lip/flange overhang onto the panel border
+TOTAL_Z = 15.0          # bracket thickness (glass -> frame backing) = cavity depth
+PRELOAD = 0.15          # rear shelf sits this proud of the panel rear -> light forward press
+LIP_Y   = 3.0           # how far the rear shelf overhangs onto the panel border
 FIT_CLR = 0.2           # friction: bracket length = FRAME_W - FIT_CLR
 SEAT_CLR = 0.1          # play between panel edge and channel web
 POCKET_CLR = 0.3        # play between panel corner and the X end-stops
@@ -40,7 +41,7 @@ EAR_CLR = 1.5           # margin around an ear pocket (X + Y)
 EAR_Z   = 2.0           # depth (from glass) cleared for the front ear tabs
 
 LX = (FRAME_W - FIT_CLR) / 2                                 # half bracket length in X
-FLANGE_Z0 = LIP_Z + SLOT_Z                                   # back wall front face (3.9)
+FLANGE_Z0 = TH - PRELOAD                                     # rear shelf front face (2.45)
 
 
 def b(x0, x1, y0, y1, z0, z1):
@@ -74,16 +75,14 @@ def make_bracket(side):
     stopR = SHIFT_X + HW + POCKET_CLR
 
     parts = []
-    # 1. web / gap filler: full length, full Z, web inner face -> frame wall
+    # 1. web / gap filler: full length, full Z, web inner face -> frame wall (front at Z0 on glass)
     yl, yh = yspan(webInnerY, wallY)
     parts.append(b(-LX, LX, yl, yh, 0, TOTAL_Z))
-    # 2. end stops: close the pocket sides, full Z, lip reach -> web
+    # 2. end stops: close the pocket sides, full Z, shelf reach -> web (locate panel corners in X)
     yl, yh = yspan(lipInnerY, webInnerY)
     parts.append(b(-LX, stopL, yl, yh, 0, TOTAL_Z))
     parts.append(b(stopR, LX, yl, yh, 0, TOTAL_Z))
-    # 3. front lip (on glass) over the pocket span
-    parts.append(b(stopL, stopR, yl, yh, 0, LIP_Z))
-    # 4. back wall flange behind the panel over the pocket span
+    # 3. rear shelf behind the panel border (front face PRELOAD proud of the panel rear) -> presses LCD to glass
     parts.append(b(stopL, stopR, yl, yh, FLANGE_Z0, TOTAL_Z))
 
     br = parts[0]

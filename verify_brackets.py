@@ -99,7 +99,7 @@ for side in (+1, -1):
 # press direction: shelf (behind LCD) -> glass
 ax.annotate("press", xy=(0.4, 0), xytext=(FLANGE_Z0, 0),
             arrowprops=dict(arrowstyle="->", color="#c00", lw=2), color="#c00", va="center")
-ax.text(TOTAL_Z * 0.55, HFH - 6, "ears + pockets on BACK face", color="#b5651d", ha="center", fontsize=8)
+ax.text(TOTAL_Z * 0.55, HFH - 6, "ears + pockets on FRONT (glass) face", color="#b5651d", ha="center", fontsize=8)
 ax.set_xlim(-1.5, TOTAL_Z + 2); ax.set_ylim(-HFH - 4, HFH + 8)
 ax.set_xlabel("Z (mm)  0=glass -> 15=frame back"); ax.set_ylabel("Y (mm)")
 ax.set_title("Side section: screen ON glass (Z0); rear shelf presses LCD from BEHIND -> glass (total 15mm)")

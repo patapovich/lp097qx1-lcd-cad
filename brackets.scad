@@ -1,7 +1,9 @@
 // Photo-frame brackets for the LP097QX1-SPC1 LCD — parametric OpenSCAD twin of build_brackets.py
 // Two L / back-press brackets on the panel's SHORT sides (top + bottom). Friction-fit in the frame.
 // No front lip: the screen sits flat on the glass; a rear shelf 'preload' proud of the panel rear is
-// pushed by the frame backing -> LCD onto the glass. Centers the VIEW (active) area in the frame.
+// pushed by the frame backing -> LCD onto the glass (push from behind). Centers the VIEW (active)
+// area. Lug ears are on the LCD FRONT (recessed ~0.25mm) -> ear pockets on the front face, which
+// shape-keys the part (only seats ears-toward-glass, keeping the shelf at the back).
 // Frame coords: origin = frame center, X right, Y up, Z=0 glass -> +Z into cavity.
 //   render: openscad -o bracket_top.stl -D part=\"top\" brackets.scad
 //   thin test print: add -D total_z=5
@@ -25,8 +27,8 @@ fit_clr = 0.2;        // friction: length = frame_w - fit_clr
 seat_clr = 0.1;       // play, panel edge vs channel web
 pocket_clr = 0.3;     // play, panel corner vs X end-stops
 ear_clr = 1.5;        // margin around an ear pocket
-ear_on_back = true;   // lugs on the LCD REAR -> clear them on the back face
-ear_z0  = panel_th - 0.6;  // front limit of the back ear pocket (~2.0)
+ear_on_back = false;  // lugs on the LCD FRONT (recessed ~0.25mm) -> clear them on the front face
+ear_z   = 2.0;        // front pocket depth from the glass (clears the ~0.25..0.55 front ear tabs)
 gap     = 0.001;      // tiny boolean overlap
 
 /* ---- ear spans [xmin,xmax,ymin,ymax] from geometry.json ---- */
@@ -61,12 +63,12 @@ module bracket(side) {                 // side = +1 top, -1 bottom
       boxc(stopR, lx, llo, lhi, 0, total_z);            // end stop R
       boxc(stopL, stopR, llo, lhi, flange_z0, total_z); // rear shelf (preload press)
     }
-    for (e = ears) {                                    // ear-clearance pockets (BACK face)
+    for (e = ears) {                                    // ear-clearance pockets (FRONT/glass face)
       tipY = (side>0 ? e[3] : e[2]) + shift_y;
       a = min(edgeY - side*2.0, tipY + side*ear_clr);
       c = max(edgeY - side*2.0, tipY + side*ear_clr);
-      z0 = ear_on_back ? ear_z0 : -gap;
-      z1 = ear_on_back ? total_z+gap : ear_z0;
+      z0 = ear_on_back ? (panel_th-0.6) : -gap;
+      z1 = ear_on_back ? total_z+gap : ear_z;
       boxc(e[0]-ear_clr, e[1]+ear_clr, a, c, z0, z1);
     }
   }

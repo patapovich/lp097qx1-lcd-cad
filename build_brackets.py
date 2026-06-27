@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
-"""Two 3D-printable C-channel brackets that center the LP097QX1 LCD in a photo frame.
+"""Two 3D-printable back-press brackets that center the LP097QX1 LCD in a photo frame and
+push it from BEHIND onto the frame glass.
 
 Frame inner cavity 182 (W) x 242 (H) mm. Brackets sit on the SHORT sides (top + bottom
-edges of the portrait panel), friction-fit between the frame side walls, and press the LCD
-forward against the frame glass. The VIEW (active) area is centered in the frame, not the
-outline (active is offset from outline by (-1.30,-0.89), so the panel is shifted (+1.30,+0.89)).
+edges of the portrait panel), friction-fit between the frame side walls. The VIEW (active) area
+is centered in the frame, not the outline (active is offset by (-1.30,-0.89), so the panel is
+shifted (+1.30,+0.89)).
 
 Frame coords here: origin = frame center, X right, Y up, Z = 0 at the glass, +Z back into
 the cavity. Each bracket is an L / back-press section (no front lip — the screen sits flat on
 the glass):
   web front at Z 0 on the glass | panel zone (Z 0..TH) open | rear shelf (Z TH-PRELOAD..TOTAL_Z).
 The rear shelf sits PRELOAD proud of the panel rear, so the frame backing pushes it -> LCD onto
-the glass. The back face (Z=TOTAL_Z) bottoms on the frame backing.
+the glass (push from behind). The back face (Z=TOTAL_Z) bottoms on the frame backing.
+
+The lug ears are on the LCD FRONT, recessed ~0.25 mm (tabs at Z ~0.25..0.55, toward the glass),
+so their clearance pockets are cut on the FRONT face. That shape-keys the part: it only seats with
+the ears in the front pockets (glass side), which keeps the press shelf at the back.
 
 Run: cqenv/bin/python build_brackets.py
- -> bracket_top.step/.stl, bracket_bottom.step/.stl
+ -> bracket_top/bottom .step/.stl + *_thin.stl (5mm test prints)
 """
 import json
 import cadquery as cq
@@ -38,8 +43,8 @@ FIT_CLR = 0.2           # friction: bracket length = FRAME_W - FIT_CLR
 SEAT_CLR = 0.1          # play between panel edge and channel web
 POCKET_CLR = 0.3        # play between panel corner and the X end-stops
 EAR_CLR = 1.5           # margin around an ear pocket (X + Y)
-EAR_ON_BACK = True      # lug ears are on the LCD REAR -> clear them on the back face
-EAR_Z0  = TH - 0.6      # front limit of the back ear pocket (~2.0) - clears the rear lug tabs
+EAR_ON_BACK = False     # lug ears are on the LCD FRONT (recessed ~0.25mm) -> clear them on the front
+EAR_Z   = 2.0           # front pocket depth from the glass (clears the ~0.25..0.55 front ear tabs)
 THIN_Z  = 5.0           # thickness of the thin test-print variants
 
 LX = (FRAME_W - FIT_CLR) / 2                                 # half bracket length in X
@@ -91,10 +96,10 @@ def make_bracket(side, tz=TOTAL_Z):
     for p in parts[1:]:
         br = br.union(p)
 
-    # 5. ear-clearance pockets: lugs sit on the LCD REAR -> cut the BACK face so the bracket
-    #    only fits pockets-toward-the-back, pressing the LCD from behind onto the glass.
-    z0 = EAR_Z0 if EAR_ON_BACK else 0.0
-    z1 = tz if EAR_ON_BACK else min(EAR_Z0, tz)
+    # 5. ear-clearance pockets: lugs sit on the LCD FRONT (recessed ~0.25mm) -> cut the FRONT face.
+    #    Front pockets shape-key the part: it only seats ears-toward-glass, keeping the shelf at back.
+    z0 = (TH - 0.6) if EAR_ON_BACK else 0.0
+    z1 = tz if EAR_ON_BACK else min(EAR_Z, tz)
     ears = ["TL", "TR"] if side > 0 else ["BL", "BR"]
     for e in ears:
         exmin, exmax, eymin, eymax = ear_span(e)

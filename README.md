@@ -116,10 +116,11 @@ sized to suit — the image lands in the frame center.
 | Rear shelf preload | 0.15 mm proud of the 2.60 panel rear |
 | Rear shelf overhang onto border | 3.0 mm (clear of the active area) |
 
-Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. The lug ears are on the LCD **back**, so each bracket's
-**ear-clearance pockets are cut on the back face** (top: TL+TR, bottom: BL+BR) — the bracket fits
-**one way only**, pockets toward the back, so the rear shelf always presses the LCD **from behind
-onto the glass**. The two brackets are **different parts** (gaps and ear pockets differ).
+Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. The lug ears are on the LCD **front** (recessed ~0.25 mm),
+so each bracket's **ear-clearance pockets are cut on the front (glass) face** (top: TL+TR, bottom:
+BL+BR). This **shape-keys** the part — it only seats with the ears in the front pockets (glass side),
+which keeps the rear shelf behind the LCD, pressing it **from behind onto the glass**. The two
+brackets are **different parts** (gaps and ear pockets differ).
 
 **Thin test-print variants** (`bracket_top_thin.stl`, `bracket_bottom_thin.stl`, Z = 5 mm) have the
 same XY, fit, preload and ear pockets — print one fast/cheap to check orientation + friction before
@@ -134,9 +135,9 @@ committing to the full 15 mm part.
 centers the outline instead (equal 16.56 mm gaps).
 
 **Assemble:** lay the frame face-down on the glass, drop the panel in screen-first (it rests on the
-glass). Push the top + bottom brackets into the end gaps **ear-pockets toward the back** (they only
-fit that way) so each rear shelf sits behind a short edge, then close the frame back — its clamping
-pushes the shelves and seats the LCD on the glass.
+glass). Push the top + bottom brackets into the end gaps **ear-pockets toward the glass** (the front
+ears only fit that way) so each rear shelf sits behind a short edge, then close the frame back — its
+clamping pushes the shelves and seats the LCD on the glass.
 
 ```bash
 cqenv/bin/python build_brackets.py     # -> bracket_top/bottom .step + .stl

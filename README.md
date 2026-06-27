@@ -62,6 +62,11 @@ protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approxi
 | `trace2..6.py`, `geom.py` | trace pipeline (silhouette → edges → ears → holes → `geometry.json`) |
 | `make_outputs.py` | regenerates the DXF/SCAD/CSV/reference/images |
 | `verify.py` | overlays `geometry.json` back on the clean render |
+| `bracket_top.step` / `.stl` | top photo-frame mounting bracket (3D print) |
+| `bracket_bottom.step` / `.stl` | bottom photo-frame mounting bracket (3D print) |
+| `build_brackets.py` | builds the two brackets from `geometry.json` + frame params (cadquery) |
+| `brackets.scad` | parametric OpenSCAD source for the brackets |
+| `verify_brackets.py` | assembly + side-section check images for the brackets |
 | `LP097QX1-SPC1.pdf` | source datasheet (© LG Display) |
 
 DXF layers: `OUTLINE`, `BEZEL`, `ACTIVE`, `HOLES`, `HOLE_CENTERS`, `EARS`, `CONNECTOR`.
@@ -86,6 +91,49 @@ cqenv/bin/python make_outputs.py    # -> DXF / SCAD / CSV / reference / images
 Re-trace from the PDF: `make_clean.py` → `trace2..6.py` → `geom.py` (writes `geometry.json`),
 then `verify.py` overlays the result on the clean render. Or render the parametric source with
 OpenSCAD: `openscad -o lcd_panel.stl lcd_panel.scad`.
+
+## Photo-frame mounting brackets
+
+Two **3D-printable C-channel brackets** that hold the panel **centered in a photo frame** whose
+inner cavity is **182 (W) × 242 (H) mm**. They sit on the panel's **short sides** (top + bottom),
+friction-fit between the frame side walls, and a 15 mm-thick back wall presses the LCD forward
+against the frame glass.
+
+They **center the VIEW (active) area, not the outline.** The active area is offset from the
+outline center by (−1.30, −0.89), so the panel is shifted (+1.30, +0.89) and the brackets are
+sized to suit — the image lands in the frame center.
+
+| | value |
+|---|---|
+| Frame inner cavity | 182 × 242 mm |
+| Top-bracket gap (Y-depth) | **15.67 mm** |
+| Bottom-bracket gap (Y-depth) | **17.45 mm** |
+| Left / right gap (open, no bracket) | 8.74 / 6.14 mm |
+| Bracket length (X, friction) | 181.8 mm (182 − 0.2) |
+| Total thickness (Z) | 15.0 mm = 1.0 lip + 2.9 panel slot + 11.1 back wall |
+| Front lip overhang onto border | 3.0 mm (clear of the active area) |
+
+Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. Each bracket has **ear-clearance pockets** for the
+lug tabs that protrude into its footprint (top: TL+TR, bottom: BL+BR). The two brackets are
+**different parts** (gaps and ear pockets differ).
+
+![bracket assembly](images/brackets_assembly.png)
+![bracket section](images/brackets_section.png)
+
+**Print:** PLA/PETG, lay flat with the channel opening up — no supports. Slot is 2.9 mm for the
+2.60 mm panel edge. **Tune the fit** at the top of `build_brackets.py` / `brackets.scad`:
+`FIT_CLR` (frame friction), `SEAT_CLR`/`POCKET_CLR` (panel play), `LIP_Z`/`LIP_Y` (set to 0 for a
+pure back-press with the LCD directly on the glass). `VIEW_CENTER=False` centers the outline
+instead (equal 16.56 mm gaps).
+
+**Assemble:** lay the frame face-down on the glass, drop the panel in face-first, then push the
+top + bottom brackets into the end gaps so each channel captures a short edge; close the frame back.
+
+```bash
+cqenv/bin/python build_brackets.py     # -> bracket_top/bottom .step + .stl
+cqenv/bin/python verify_brackets.py    # -> images/brackets_assembly.png + brackets_section.png
+# or parametric: openscad -o bracket_top.stl -D 'part="top"' brackets.scad
+```
 
 ## Accuracy
 

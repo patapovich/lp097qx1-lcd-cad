@@ -96,8 +96,12 @@ for side in (+1, -1):
                            abs(wallY - webInnerY), fc="#ffd9a8", ec="#b5651d"))           # web full Z, on glass
     ax.add_patch(Rectangle((FLANGE_Z0, yl), TOTAL_Z - FLANGE_Z0, yh - yl,
                            fc="#ffd9a8", ec="#b5651d"))                                     # rear shelf
+# press direction: shelf (behind LCD) -> glass
+ax.annotate("press", xy=(0.4, 0), xytext=(FLANGE_Z0, 0),
+            arrowprops=dict(arrowstyle="->", color="#c00", lw=2), color="#c00", va="center")
+ax.text(TOTAL_Z * 0.55, HFH - 6, "ears + pockets on BACK face", color="#b5651d", ha="center", fontsize=8)
 ax.set_xlim(-1.5, TOTAL_Z + 2); ax.set_ylim(-HFH - 4, HFH + 8)
 ax.set_xlabel("Z (mm)  0=glass -> 15=frame back"); ax.set_ylabel("Y (mm)")
-ax.set_title("Side section: screen ON glass (Z0), rear shelf 0.15 proud presses LCD forward — total 15mm")
+ax.set_title("Side section: screen ON glass (Z0); rear shelf presses LCD from BEHIND -> glass (total 15mm)")
 fig.tight_layout(); fig.savefig("images/brackets_section.png", dpi=130); plt.close(fig)
 print("wrote images/brackets_section.png")

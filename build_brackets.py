@@ -38,7 +38,9 @@ FIT_CLR = 0.2           # friction: bracket length = FRAME_W - FIT_CLR
 SEAT_CLR = 0.1          # play between panel edge and channel web
 POCKET_CLR = 0.3        # play between panel corner and the X end-stops
 EAR_CLR = 1.5           # margin around an ear pocket (X + Y)
-EAR_Z   = 2.0           # depth (from glass) cleared for the front ear tabs
+EAR_ON_BACK = True      # lug ears are on the LCD REAR -> clear them on the back face
+EAR_Z0  = TH - 0.6      # front limit of the back ear pocket (~2.0) - clears the rear lug tabs
+THIN_Z  = 5.0           # thickness of the thin test-print variants
 
 LX = (FRAME_W - FIT_CLR) / 2                                 # half bracket length in X
 FLANGE_Z0 = TH - PRELOAD                                     # rear shelf front face (2.45)
@@ -58,8 +60,8 @@ def ear_span(name):
     return min(xs), max(xs), min(ys), max(ys)
 
 
-def make_bracket(side):
-    """side = +1 top, -1 bottom."""
+def make_bracket(side, tz=TOTAL_Z):
+    """side = +1 top, -1 bottom. tz = total Z thickness (full or thin)."""
     edgeY = side * (HH + side * SHIFT_Y)         # panel short edge in frame Y (top +105.33 / bottom -103.55)
     # gap-side ordering helpers (work in 'outboard' = away from center)
     wallY = side * HFH                            # frame end wall (+121 / -121)
@@ -77,25 +79,28 @@ def make_bracket(side):
     parts = []
     # 1. web / gap filler: full length, full Z, web inner face -> frame wall (front at Z0 on glass)
     yl, yh = yspan(webInnerY, wallY)
-    parts.append(b(-LX, LX, yl, yh, 0, TOTAL_Z))
+    parts.append(b(-LX, LX, yl, yh, 0, tz))
     # 2. end stops: close the pocket sides, full Z, shelf reach -> web (locate panel corners in X)
     yl, yh = yspan(lipInnerY, webInnerY)
-    parts.append(b(-LX, stopL, yl, yh, 0, TOTAL_Z))
-    parts.append(b(stopR, LX, yl, yh, 0, TOTAL_Z))
+    parts.append(b(-LX, stopL, yl, yh, 0, tz))
+    parts.append(b(stopR, LX, yl, yh, 0, tz))
     # 3. rear shelf behind the panel border (front face PRELOAD proud of the panel rear) -> presses LCD to glass
-    parts.append(b(stopL, stopR, yl, yh, FLANGE_Z0, TOTAL_Z))
+    parts.append(b(stopL, stopR, yl, yh, FLANGE_Z0, tz))
 
     br = parts[0]
     for p in parts[1:]:
         br = br.union(p)
 
-    # 5. ear-clearance pockets (cut the front where the 0.30mm tabs poke into the bracket)
+    # 5. ear-clearance pockets: lugs sit on the LCD REAR -> cut the BACK face so the bracket
+    #    only fits pockets-toward-the-back, pressing the LCD from behind onto the glass.
+    z0 = EAR_Z0 if EAR_ON_BACK else 0.0
+    z1 = tz if EAR_ON_BACK else min(EAR_Z0, tz)
     ears = ["TL", "TR"] if side > 0 else ["BL", "BR"]
     for e in ears:
         exmin, exmax, eymin, eymax = ear_span(e)
         tipY = (eymax if side > 0 else eymin) + SHIFT_Y
         yl, yh = yspan(edgeY - side * 2.0, tipY + side * EAR_CLR)
-        cut = b(exmin - EAR_CLR, exmax + EAR_CLR, yl, yh, 0, EAR_Z)
+        cut = b(exmin - EAR_CLR, exmax + EAR_CLR, yl, yh, z0, z1)
         br = br.cut(cut)
 
     return br
@@ -109,3 +114,7 @@ for name, side in [("bracket_top", +1), ("bracket_bottom", -1)]:
     cq.exporters.export(br, name + ".step")
     cq.exporters.export(br, name + ".stl")
     print(f"  wrote {name}.step + {name}.stl")
+    # thin test-print variant (same XY/fit/preload/ear pockets, shorter Z)
+    thin = make_bracket(side, THIN_Z)
+    cq.exporters.export(thin, name + "_thin.stl")
+    print(f"  wrote {name}_thin.stl  (Z={THIN_Z})")

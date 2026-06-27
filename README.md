@@ -64,6 +64,7 @@ protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approxi
 | `verify.py` | overlays `geometry.json` back on the clean render |
 | `bracket_top.step` / `.stl` | top photo-frame mounting bracket (3D print) |
 | `bracket_bottom.step` / `.stl` | bottom photo-frame mounting bracket (3D print) |
+| `bracket_top_thin.stl` / `bracket_bottom_thin.stl` | 5 mm-thick test-print variants (same XY/fit) |
 | `build_brackets.py` | builds the two brackets from `geometry.json` + frame params (cadquery) |
 | `brackets.scad` | parametric OpenSCAD source for the brackets |
 | `verify_brackets.py` | assembly + side-section check images for the brackets |
@@ -115,9 +116,14 @@ sized to suit — the image lands in the frame center.
 | Rear shelf preload | 0.15 mm proud of the 2.60 panel rear |
 | Rear shelf overhang onto border | 3.0 mm (clear of the active area) |
 
-Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. Each bracket has **ear-clearance pockets** for the
-lug tabs that protrude into its footprint (top: TL+TR, bottom: BL+BR). The two brackets are
-**different parts** (gaps and ear pockets differ).
+Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. The lug ears are on the LCD **back**, so each bracket's
+**ear-clearance pockets are cut on the back face** (top: TL+TR, bottom: BL+BR) — the bracket fits
+**one way only**, pockets toward the back, so the rear shelf always presses the LCD **from behind
+onto the glass**. The two brackets are **different parts** (gaps and ear pockets differ).
+
+**Thin test-print variants** (`bracket_top_thin.stl`, `bracket_bottom_thin.stl`, Z = 5 mm) have the
+same XY, fit, preload and ear pockets — print one fast/cheap to check orientation + friction before
+committing to the full 15 mm part.
 
 ![bracket assembly](images/brackets_assembly.png)
 ![bracket section](images/brackets_section.png)
@@ -128,8 +134,9 @@ lug tabs that protrude into its footprint (top: TL+TR, bottom: BL+BR). The two b
 centers the outline instead (equal 16.56 mm gaps).
 
 **Assemble:** lay the frame face-down on the glass, drop the panel in screen-first (it rests on the
-glass), push the top + bottom brackets into the end gaps so each rear shelf sits behind a short
-edge, then close the frame back — its clamping pushes the shelves and seats the LCD on the glass.
+glass). Push the top + bottom brackets into the end gaps **ear-pockets toward the back** (they only
+fit that way) so each rear shelf sits behind a short edge, then close the frame back — its clamping
+pushes the shelves and seats the LCD on the glass.
 
 ```bash
 cqenv/bin/python build_brackets.py     # -> bracket_top/bottom .step + .stl

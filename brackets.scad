@@ -4,6 +4,7 @@
 // pushed by the frame backing -> LCD onto the glass. Centers the VIEW (active) area in the frame.
 // Frame coords: origin = frame center, X right, Y up, Z=0 glass -> +Z into cavity.
 //   render: openscad -o bracket_top.stl -D part=\"top\" brackets.scad
+//   thin test print: add -D total_z=5
 part = "both";        // "both" | "top" | "bottom"
 
 /* ---- frame + panel ---- */
@@ -24,7 +25,8 @@ fit_clr = 0.2;        // friction: length = frame_w - fit_clr
 seat_clr = 0.1;       // play, panel edge vs channel web
 pocket_clr = 0.3;     // play, panel corner vs X end-stops
 ear_clr = 1.5;        // margin around an ear pocket
-ear_z   = 2.0;        // front depth cleared for ear tabs
+ear_on_back = true;   // lugs on the LCD REAR -> clear them on the back face
+ear_z0  = panel_th - 0.6;  // front limit of the back ear pocket (~2.0)
 gap     = 0.001;      // tiny boolean overlap
 
 /* ---- ear spans [xmin,xmax,ymin,ymax] from geometry.json ---- */
@@ -59,11 +61,13 @@ module bracket(side) {                 // side = +1 top, -1 bottom
       boxc(stopR, lx, llo, lhi, 0, total_z);            // end stop R
       boxc(stopL, stopR, llo, lhi, flange_z0, total_z); // rear shelf (preload press)
     }
-    for (e = ears) {                                    // ear-clearance pockets
+    for (e = ears) {                                    // ear-clearance pockets (BACK face)
       tipY = (side>0 ? e[3] : e[2]) + shift_y;
       a = min(edgeY - side*2.0, tipY + side*ear_clr);
       c = max(edgeY - side*2.0, tipY + side*ear_clr);
-      boxc(e[0]-ear_clr, e[1]+ear_clr, a, c, -gap, ear_z);
+      z0 = ear_on_back ? ear_z0 : -gap;
+      z1 = ear_on_back ? total_z+gap : ear_z0;
+      boxc(e[0]-ear_clr, e[1]+ear_clr, a, c, z0, z1);
     }
   }
 }

@@ -19,6 +19,10 @@ The lug ears are on the LCD FRONT, recessed ~0.25 mm (tabs at Z ~0.25..0.55, tow
 so their clearance pockets are cut on the FRONT face. That shape-keys the part: it only seats with
 the ears in the front pockets (glass side), which keeps the press shelf at the back.
 
+Ear pockets are placed at each tab's ACTUAL frame position (panel view-shift applied in X and Y),
+so they track the asymmetric lug layout (TL left-edge, TR top-edge, BL/BR bottom-edge). MIRROR_X
+flips handedness if a panel is the other way round (default False = matches the traced front view).
+
 Run: cqenv/bin/python build_brackets.py
  -> bracket_top/bottom .step/.stl + *_thin.stl (5mm test prints)
 """
@@ -99,18 +103,20 @@ def make_bracket(side, tz=TOTAL_Z, mirror=MIRROR_X):
     for p in parts[1:]:
         br = br.union(p)
 
-    # 5. ear-clearance pockets: lugs sit on the LCD FRONT (recessed ~0.25mm) -> cut the FRONT face.
-    #    Front pockets shape-key the part: it only seats ears-toward-glass, keeping the shelf at back.
+    # 5. ear-clearance pockets: lugs are on the LCD FRONT (recessed ~0.25mm). Clear each ear by its
+    #    ACTUAL frame bbox (panel shift applied in X and Y, mirror-aware) + EAR_CLR, cut on the front
+    #    (Z 0..EAR_Z). cut() only removes existing material, so this clears whichever way the tab pokes
+    #    (TR top, BL/BR bottom, TL left-edge corner graze) with full clearance.
     z0 = (TH - 0.6) if EAR_ON_BACK else 0.0
     z1 = tz if EAR_ON_BACK else min(EAR_Z, tz)
     ears = ["TL", "TR"] if side > 0 else ["BL", "BR"]
     for e in ears:
         exmin, exmax, eymin, eymax = ear_span(e)
-        if mirror:                               # negate + swap the X span
-            exmin, exmax = -exmax, -exmin
-        tipY = (eymax if side > 0 else eymin) + SHIFT_Y
-        yl, yh = yspan(edgeY - side * 2.0, tipY + side * EAR_CLR)
-        cut = b(exmin - EAR_CLR, exmax + EAR_CLR, yl, yh, z0, z1)
+        ax0, ax1 = exmin + SHIFT_X, exmax + SHIFT_X      # ear bbox in frame X (panel shift)
+        if mirror:
+            ax0, ax1 = -ax1, -ax0                        # reflect about frame center
+        ay0, ay1 = eymin + SHIFT_Y, eymax + SHIFT_Y      # ear bbox in frame Y
+        cut = b(ax0 - EAR_CLR, ax1 + EAR_CLR, ay0 - EAR_CLR, ay1 + EAR_CLR, z0, z1)
         br = br.cut(cut)
 
     return br
@@ -128,8 +134,7 @@ for name, side in [("bracket_top", +1), ("bracket_bottom", -1)]:
     thin = make_bracket(side, THIN_Z)
     cq.exporters.export(thin, name + "_thin.stl")
     print(f"  wrote {name}_thin.stl  (Z={THIN_Z})")
+    # integrity: must be a single valid solid (no artifacts)
+    assert len(br.solids().vals()) == 1 and s.isValid(), f"{name}: not a single valid solid!"
 
-# mirrored thin top for the handedness fit-test (X-flipped ear pockets)
-mir = make_bracket(+1, THIN_Z, mirror=not MIRROR_X)
-cq.exporters.export(mir, "bracket_top_thin_mir.stl")
-print(f"  wrote bracket_top_thin_mir.stl  (Z={THIN_Z}, X-mirrored vs the normal thin top)")
+print("all brackets: single valid solids OK")

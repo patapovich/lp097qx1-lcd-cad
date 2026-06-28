@@ -64,15 +64,13 @@ module bracket(side) {                 // side = +1 top, -1 bottom
       boxc(stopR, lx, llo, lhi, 0, total_z);            // end stop R
       boxc(stopL, stopR, llo, lhi, flange_z0, total_z); // rear shelf (behind the panel)
     }
-    for (e = ears) {                                    // ear-clearance pockets (FRONT/glass face)
-      exmin = mirror_x ? -e[1] : e[0];                  // negate + swap X if mirrored
-      exmax = mirror_x ? -e[0] : e[1];
-      tipY = (side>0 ? e[3] : e[2]) + shift_y;
-      a = min(edgeY - side*2.0, tipY + side*ear_clr);
-      c = max(edgeY - side*2.0, tipY + side*ear_clr);
+    for (e = ears) {                                    // ear pockets at the tab's actual frame bbox
+      ex0 = (mirror_x ? -e[1] : e[0]) + shift_x;        // ear bbox in frame X (panel shift, mirror-aware)
+      ex1 = (mirror_x ? -e[0] : e[1]) + shift_x;
+      ay0 = e[2] + shift_y; ay1 = e[3] + shift_y;       // ear bbox in frame Y
       z0 = ear_on_back ? (panel_th-0.6) : -gap;
       z1 = ear_on_back ? total_z+gap : ear_z;
-      boxc(exmin-ear_clr, exmax+ear_clr, a, c, z0, z1);
+      boxc(ex0-ear_clr, ex1+ear_clr, ay0-ear_clr, ay1+ear_clr, z0, z1);
     }
   }
 }

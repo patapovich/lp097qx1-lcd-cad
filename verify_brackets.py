@@ -25,10 +25,32 @@ LX = (FRAME_W - FIT_CLR) / 2
 FLANGE_Z0 = TH + SLOT_CLR
 
 
+MIRROR_X = False
+
+
 def ear_span(name):
     p = G["ears"][name]
     xs = [q[0] for q in p]; ys = [q[1] for q in p]
     return min(xs), max(xs), min(ys), max(ys)
+
+
+def pocket_rect(name):
+    """ear pocket bbox in frame coords (matches build_brackets.make_bracket)."""
+    exmin, exmax, eymin, eymax = ear_span(name)
+    ax0, ax1 = exmin + SHIFT_X, exmax + SHIFT_X
+    if MIRROR_X:
+        ax0, ax1 = -ax1, -ax0
+    ay0, ay1 = eymin + SHIFT_Y, eymax + SHIFT_Y
+    return ax0 - EAR_CLR, ax1 + EAR_CLR, ay0 - EAR_CLR, ay1 + EAR_CLR
+
+
+def ear_frame_bbox(name):
+    """actual ear bbox in frame coords (panel-shifted, mirror-aware)."""
+    exmin, exmax, eymin, eymax = ear_span(name)
+    ax0, ax1 = exmin + SHIFT_X, exmax + SHIFT_X
+    if MIRROR_X:
+        ax0, ax1 = -ax1, -ax0
+    return ax0, ax1, eymin + SHIFT_Y, eymax + SHIFT_Y
 
 
 # ---------- TOP VIEW ----------
@@ -60,13 +82,11 @@ for side in (+1, -1):
         ax.add_patch(Rectangle((x0, yl), x1 - x0, yh - yl, fc="#ffd9a8", ec="#b5651d", lw=1.0))
     ax.add_patch(Rectangle((stopL, yl), stopR - stopL, yh - yl, fc="none", ec="#b5651d",        # rear shelf (behind panel)
                            lw=0.8, ls=":"))
-    # ear pockets (white notch)
+    # ear pockets (red dashed) at the corrected frame positions
     for e in (["TL", "TR"] if side > 0 else ["BL", "BR"]):
-        exmin, exmax, eymin, eymax = ear_span(e)
-        tipY = (eymax if side > 0 else eymin) + SHIFT_Y
-        a, c = sorted((edgeY - side * 2.0, tipY + side * EAR_CLR))
-        ax.add_patch(Rectangle((exmin - EAR_CLR, a), (exmax - exmin) + 2 * EAR_CLR, c - a,
-                               fc="white", ec="red", lw=1.0, ls="--"))
+        px0, px1, py0, py1 = pocket_rect(e)
+        ax.add_patch(Rectangle((px0, py0), px1 - px0, py1 - py0,
+                               fill=False, ec="red", lw=1.0, ls="--"))
 
 ax.axhline(0, color="0.6", lw=0.6); ax.axvline(0, color="0.6", lw=0.6)
 ax.plot(0, 0, "+", color="#0a8f0a", ms=14, mew=2)
@@ -75,6 +95,25 @@ ax.set_title("Bracket assembly (top view) — green '+' = frame center = active 
 ax.set_xlabel("X (mm)"); ax.set_ylabel("Y (mm)")
 fig.tight_layout(); fig.savefig("images/brackets_assembly.png", dpi=130); plt.close(fig)
 print("wrote images/brackets_assembly.png")
+
+# ---------- EAR-POCKET COVERAGE (per ear zoom) ----------
+fig, axes = plt.subplots(1, 4, figsize=(14, 4))
+for axc, e in zip(axes, ["TL", "TR", "BL", "BR"]):
+    ep = [(x + SHIFT_X, y + SHIFT_Y) for x, y in G["ears"][e]]
+    if MIRROR_X:
+        ep = [(-x, y) for x, y in ep]
+    axc.add_patch(Polygon(ep, closed=True, fc="#9ec8f5", ec="#1f6fd0", lw=1.0))   # actual ear
+    bx0, bx1, by0, by1 = ear_frame_bbox(e)
+    px0, px1, py0, py1 = pocket_rect(e)
+    axc.add_patch(Rectangle((px0, py0), px1 - px0, py1 - py0, fill=False, ec="red", lw=1.5, ls="--"))
+    clr = min(bx0 - px0, px1 - bx1, by0 - py0, py1 - by1)                          # min clearance all sides
+    cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
+    axc.set_xlim(cx - 8, cx + 8); axc.set_ylim(cy - 8, cy + 8); axc.set_aspect("equal")
+    axc.set_title(f"{e}  min clr {clr:.2f}mm", fontsize=10)
+    axc.grid(True, lw=0.3, alpha=0.5)
+fig.suptitle("Ear pocket (red) covers actual ear (blue) — clearance all round (EAR_CLR=1.5)")
+fig.tight_layout(); fig.savefig("images/brackets_ear_coverage.png", dpi=120); plt.close(fig)
+print("wrote images/brackets_ear_coverage.png")
 
 # ---------- SIDE SECTION (Y-Z at X=0) ----------
 fig, ax = plt.subplots(figsize=(9, 4))

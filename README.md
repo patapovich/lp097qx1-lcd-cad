@@ -65,7 +65,6 @@ protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approxi
 | `bracket_top.step` / `.stl` | top photo-frame mounting bracket (3D print) |
 | `bracket_bottom.step` / `.stl` | bottom photo-frame mounting bracket (3D print) |
 | `bracket_top_thin.stl` / `bracket_bottom_thin.stl` | 5 mm-thick test-print variants (same XY/fit) |
-| `bracket_top_thin_mir.stl` | X-mirrored thin top for the handedness fit-test |
 | `build_brackets.py` | builds the two brackets from `geometry.json` + frame params (cadquery) |
 | `brackets.scad` | parametric OpenSCAD source for the brackets |
 | `verify_brackets.py` | assembly + side-section check images for the brackets |
@@ -126,10 +125,15 @@ brackets are **different parts** (gaps and ear pockets differ).
 
 **Thin test-print variants** (`bracket_top_thin.stl`, `bracket_bottom_thin.stl`, Z = 5 mm) have the
 same XY/fit/slot/ear pockets — print one fast/cheap to check fit + orientation before the full 15 mm
-part. `bracket_top_thin_mir.stl` is the **X-mirrored** thin top: if the ear pockets don't line up with
-your panel, the mirror will — then set `MIRROR_X=True` for the full build.
+part. Ear pockets are placed at each tab's **actual** position (the asymmetric layout: TL left-edge,
+TR top-edge, BL/BR bottom-edge), with **1.5 mm clearance** all round — see the coverage check below.
+If a panel is handed the other way, set `MIRROR_X=True` to flip the pockets in X.
+
+Each bracket's total depth into the cavity is the end-gap **plus** the 3 mm shelf overhang behind the
+LCD border (top 15.67+3.0, bottom 17.45+3.0), all behind the screen — the active area stays clear.
 
 ![bracket assembly](images/brackets_assembly.png)
+![ear pocket coverage](images/brackets_ear_coverage.png)
 ![bracket section](images/brackets_section.png)
 
 **Print:** PLA/PETG, lay flat — no supports. **Tune the fit** at the top of `build_brackets.py` /

@@ -68,6 +68,8 @@ protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approxi
 | `build_brackets.py` | builds the two brackets from `geometry.json` + frame params (cadquery) |
 | `brackets.scad` | parametric OpenSCAD source for the brackets |
 | `verify_brackets.py` | assembly + side-section check images for the brackets |
+| `passepartout.dxf` | mat cut lines (BOARD / WINDOW_FRONT / WINDOW_BACK layers) |
+| `passepartout.py` | builds the mat drawing + DXF (180×240, 45° bevel window = screen) |
 | `LP097QX1-SPC1.pdf` | source datasheet (© LG Display) |
 
 DXF layers: `OUTLINE`, `BEZEL`, `ACTIVE`, `HOLES`, `HOLE_CENTERS`, `EARS`, `CONNECTOR`.
@@ -166,6 +168,32 @@ cqenv/bin/python build_brackets.py     # -> bracket_top/bottom .step + .stl
 cqenv/bin/python verify_brackets.py    # -> images/brackets_assembly.png + brackets_section.png
 # or parametric: openscad -o bracket_top.stl -D 'part="top"' brackets.scad
 ```
+
+## Passe-partout (mat window)
+
+A **180 × 240 × 1.4 mm** mat with a centred **45° bevel** window that reveals only the **active
+screen** (147.456 × 196.608). The brackets centre the active area at the frame centre, so the window
+is **centred** in the board (symmetric — equal borders).
+
+![passe-partout](images/passepartout.png)
+
+| feature | mm |
+|---|---|
+| Board (outer) | 180 × 240 × 1.4 |
+| **Front window** (visible / viewer side) | **147.46 × 196.61** (= active screen) |
+| Front border — L/R, T/B | **16.27**, **21.70** |
+| Back window (bevel, toward LCD) | 150.26 × 199.41 |
+| Back border — L/R, T/B | 14.87, 20.30 |
+| Bevel | 45°, run 1.40 mm/edge |
+
+- The **front (glass-side) opening is the visible one** (= the screen); the 45° bevel flares **1.4 mm
+  per edge toward the LCD**, so the white bevel faces the viewer and casts no shadow on the image.
+- Manual cutter: set the border guide to the **front borders** (16.27 / 21.70) and cut from the back;
+  the bevel undercuts toward the LCD. `WINDOW_FRONT` in the DXF is the visible cut line.
+- To guarantee no bezel sliver if alignment isn't perfect, set `OVERLAP=1.0` in `passepartout.py`
+  (mat then covers ~1 mm of the screen edge → front borders 17.27 / 22.70).
+- Board outer 180 × 240 sits in the 182 × 242 frame with ~1 mm clearance/side — keep it centred so the
+  window lines up with the (centred) screen.
 
 ## Accuracy
 

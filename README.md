@@ -190,6 +190,12 @@ so the white bevel faces you.
 | Glass-face border — L/R, T/B | 14.87, 20.30 |
 | Bevel | 45°, run 1.40 mm/edge, opens toward glass |
 
+**Hand-marking** (`images/passepartout.png` is a ruler/pencil guide): on the LCD-facing side, from
+**each** edge measure **16.27 mm** (left/right) and **21.70 mm** (top/bottom), mark at both ends of
+every edge, join with a straightedge → the 147.46 × 196.61 rectangle, then 45° bevel-cut. Window
+corners from the bottom-left corner: **(16.27, 21.70)**, **(163.73, 21.70)**, **(16.27, 218.30)**,
+**(163.73, 218.30)**.
+
 - The **screen-sized opening is on the LCD side** (147.46 × 196.61) and crops exactly to the screen;
   the bevel widens to **150.26 × 199.41** at the glass face. White bevel faces the viewer.
 - Manual cutter: cut so the **small (screen-sized) opening is on the LCD-facing side**; the 45° bevel

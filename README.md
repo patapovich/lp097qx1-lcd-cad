@@ -127,10 +127,15 @@ brackets are **different parts** (gaps and ear pockets differ).
 same XY/fit/slot/ear pockets — print one fast/cheap to check fit + orientation before the full 15 mm
 part. Ear pockets are placed at each tab's **actual** position (the asymmetric layout: TL left-edge,
 TR top-edge, BL/BR bottom-edge), with **1.5 mm clearance** all round — see the coverage check below.
-If a panel is handed the other way, set `MIRROR_X=True` to flip the pockets in X.
+Pockets + outline are **`MIRROR_X`-handed to match the physical panel** (see Handedness above).
 
 Each bracket's total depth into the cavity is the end-gap **plus** the 3 mm shelf overhang behind the
 LCD border (top 15.67+3.0, bottom 17.45+3.0), all behind the screen — the active area stays clear.
+
+**Handedness:** the datasheet **FRONT VIEW is mirrored left-right vs the physical panel**, so the
+brackets are built with **`MIRROR_X=True`** to match the real part. Front view (screen toward you):
+the prominent angled lug is at the **top-right**, the single up-poking lug at the top-left, two lugs
+on the bottom edge. (Set `MIRROR_X=False` to follow the raw datasheet handedness instead.)
 
 ### Orientation (important)
 The part is nearly symmetric front-to-back, so it has an explicit key: the flat rear face is

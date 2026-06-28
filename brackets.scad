@@ -29,7 +29,7 @@ pocket_clr = 0.3;     // play, panel corner vs X end-stops
 ear_clr = 1.5;        // margin around an ear pocket
 ear_on_back = false;  // lugs on the LCD FRONT (recessed ~0.25mm) -> clear them on the front face
 ear_z   = 0.7;        // shallow front pocket depth (clears the ~0.25..0.55 recessed front ear tabs)
-mirror_x = false;     // negate all X (ear spans + shift_x) if the panel is handed the other way
+mirror_x = true;      // datasheet front view is mirrored vs the physical panel -> flip X to match real part
 label = true;         // deboss "BACK" on the flat rear face = orientation key
 label_text = "BACK";  // this face -> frame backing; opposite (slot) face -> glass
 label_h = 6.0;        // text height

@@ -50,7 +50,7 @@ POCKET_CLR = 0.3        # play between panel corner and the X end-stops
 EAR_CLR = 1.5           # margin around an ear pocket (X + Y)
 EAR_ON_BACK = False     # lug ears are on the LCD FRONT (recessed ~0.25mm) -> clear them on the front
 EAR_Z   = 0.7           # shallow front pocket depth (clears the ~0.25..0.55 recessed front ear tabs)
-MIRROR_X = False        # negate all X (ear spans + SHIFT_X) if the panel is handed the other way
+MIRROR_X = True         # datasheet front view is mirrored vs the physical panel -> flip X to match real part
 THIN_Z  = 5.0           # thickness of the thin test-print variants
 LABEL = True            # deboss "BACK" on the flat rear face = orientation key
 LABEL_TEXT = "BACK"     # this flat face goes to the frame backing; opposite (slot) face -> glass

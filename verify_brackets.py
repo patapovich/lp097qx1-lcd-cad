@@ -25,7 +25,13 @@ LX = (FRAME_W - FIT_CLR) / 2
 FLANGE_Z0 = TH + SLOT_CLR
 
 
-MIRROR_X = False
+MIRROR_X = True
+SX = -SHIFT_X if MIRROR_X else SHIFT_X      # panel-center X (mirror-aware)
+
+
+def fx(gx):
+    """geometry X -> frame X (panel shift, mirror-aware)."""
+    return (-gx if MIRROR_X else gx) + SX
 
 
 def ear_span(name):
@@ -53,46 +59,47 @@ def ear_frame_bbox(name):
     return ax0, ax1, eymin + SHIFT_Y, eymax + SHIFT_Y
 
 
-# ---------- TOP VIEW ----------
+# ---------- TOP VIEW (FRONT, from the glass: ears + brackets handed to match the real panel) ----------
 fig, ax = plt.subplots(figsize=(7, 9))
-# frame cavity
-ax.add_patch(Rectangle((-HFW, -HFH), FRAME_W, FRAME_H, fill=False, ec="black", lw=2))
-# panel outline (shifted = view centered)
-out = [(x + SHIFT_X, y + SHIFT_Y) for x, y in G["outline"]]
-ax.add_patch(Polygon(out, closed=True, fill=True, fc="#cfe3ff", ec="#1f6fd0", lw=1.2))
-# ears
-for k in G["ears"]:
-    ep = [(x + SHIFT_X, y + SHIFT_Y) for x, y in G["ears"][k]]
-    ax.add_patch(Polygon(ep, closed=True, fill=True, fc="#9ec8f5", ec="#1f6fd0", lw=0.8))
-# active area (centered on frame)
-ax.add_patch(Rectangle((ACT["cx"] + SHIFT_X - ACT["W"] / 2, ACT["cy"] + SHIFT_Y - ACT["H"] / 2),
-                       ACT["W"], ACT["H"], fill=False, ec="#0a8f0a", lw=1.4, ls="--"))
+ax.add_patch(Rectangle((-HFW, -HFH), FRAME_W, FRAME_H, fill=False, ec="black", lw=2))   # frame cavity
 
-# brackets
+# brackets FIRST (they are BEHIND the LCD) — light, so the front ears read on top
 for side in (+1, -1):
     edgeY = side * (HH + side * SHIFT_Y)
     webInnerY = edgeY + side * SEAT_CLR
     lipInnerY = edgeY - side * LIP_Y
     wallY = side * HFH
-    stopL, stopR = SHIFT_X - HW - POCKET_CLR, SHIFT_X + HW + POCKET_CLR
+    stopL, stopR = SX - HW - POCKET_CLR, SX + HW + POCKET_CLR
     yl, yh = sorted((webInnerY, wallY))
-    ax.add_patch(Rectangle((-LX, yl), 2 * LX, yh - yl, fc="#ffd9a8", ec="#b5651d", lw=1.0))   # web
+    ax.add_patch(Rectangle((-LX, yl), 2 * LX, yh - yl, fc="#ffe9cf", ec="#b5651d", lw=1.0, alpha=.8))  # web (behind)
     yl, yh = sorted((lipInnerY, webInnerY))
-    for x0, x1 in [(-LX, stopL), (stopR, LX)]:                                                 # end stops
-        ax.add_patch(Rectangle((x0, yl), x1 - x0, yh - yl, fc="#ffd9a8", ec="#b5651d", lw=1.0))
-    ax.add_patch(Rectangle((stopL, yl), stopR - stopL, yh - yl, fc="none", ec="#b5651d",        # rear shelf (behind panel)
-                           lw=0.8, ls=":"))
-    # ear pockets (red dashed) at the corrected frame positions
+    for x0, x1 in [(-LX, stopL), (stopR, LX)]:
+        ax.add_patch(Rectangle((x0, yl), x1 - x0, yh - yl, fc="#ffe9cf", ec="#b5651d", lw=1.0, alpha=.8))
+    ax.add_patch(Rectangle((stopL, yl), stopR - stopL, yh - yl, fc="none", ec="#b5651d", lw=0.8, ls=":"))
+
+# panel outline (mirror-aware), semi-transparent so ears show
+out = [(fx(x), y + SHIFT_Y) for x, y in G["outline"]]
+ax.add_patch(Polygon(out, closed=True, fill=True, fc="#cfe3ff", ec="#1f6fd0", lw=1.2, alpha=.55))
+# active area (centered on frame)
+ax.add_patch(Rectangle((-ACT["W"] / 2, -ACT["H"] / 2), ACT["W"], ACT["H"],
+                       fill=False, ec="#0a8f0a", lw=1.4, ls="--"))
+# LUG EARS on TOP (front-side feature) — solid + hole markers, so they're clearly visible
+for k in G["ears"]:
+    ep = [(fx(x), y + SHIFT_Y) for x, y in G["ears"][k]]
+    ax.add_patch(Polygon(ep, closed=True, fill=True, fc="#1f6fd0", ec="#0b3d70", lw=1.0, zorder=5))
+    hx, hy = G["holes"][k]
+    ax.plot(fx(hx), hy + SHIFT_Y, "o", mfc="white", mec="#0b3d70", ms=6, zorder=6)
+# ear pockets (red dashed) — should sit on the ears
+for side in (+1, -1):
     for e in (["TL", "TR"] if side > 0 else ["BL", "BR"]):
         px0, px1, py0, py1 = pocket_rect(e)
-        ax.add_patch(Rectangle((px0, py0), px1 - px0, py1 - py0,
-                               fill=False, ec="red", lw=1.0, ls="--"))
+        ax.add_patch(Rectangle((px0, py0), px1 - px0, py1 - py0, fill=False, ec="red", lw=1.0, ls="--", zorder=4))
 
 ax.axhline(0, color="0.6", lw=0.6); ax.axvline(0, color="0.6", lw=0.6)
-ax.plot(0, 0, "+", color="#0a8f0a", ms=14, mew=2)
+ax.plot(0, 0, "+", color="#0a8f0a", ms=14, mew=2, zorder=8)
 ax.set_aspect("equal"); ax.set_xlim(-HFW - 6, HFW + 6); ax.set_ylim(-HFH - 6, HFH + 6)
-ax.set_title("Bracket assembly (top view) — green '+' = frame center = active center")
-ax.set_xlabel("X (mm)"); ax.set_ylabel("Y (mm)")
+ax.set_title("FRONT view (from glass) — blue=lug ears (front), orange=brackets (behind)\nhanded to match the real panel; green '+' = frame center = active center")
+ax.set_xlabel("X (mm)  (+ = right, as seen from the front)"); ax.set_ylabel("Y (mm)")
 fig.tight_layout(); fig.savefig("images/brackets_assembly.png", dpi=130); plt.close(fig)
 print("wrote images/brackets_assembly.png")
 

@@ -19,10 +19,10 @@ HFW, HFH = FRAME_W / 2, FRAME_H / 2
 VIEW_CENTER = True
 SHIFT_X = -ACT["cx"] if VIEW_CENTER else 0.0
 SHIFT_Y = -ACT["cy"] if VIEW_CENTER else 0.0
-TOTAL_Z, PRELOAD, LIP_Y = 15.0, 0.15, 3.0
-FIT_CLR, SEAT_CLR, POCKET_CLR, EAR_CLR, EAR_Z = 0.2, 0.1, 0.3, 1.5, 2.0
+TOTAL_Z, SLOT_CLR, LIP_Y = 15.0, 0.15, 3.0
+FIT_CLR, SEAT_CLR, POCKET_CLR, EAR_CLR, EAR_Z = 0.2, 0.1, 0.3, 1.5, 0.7
 LX = (FRAME_W - FIT_CLR) / 2
-FLANGE_Z0 = TH - PRELOAD
+FLANGE_Z0 = TH + SLOT_CLR
 
 
 def ear_span(name):
@@ -86,7 +86,7 @@ ax.text(TOTAL_Z, TOTAL_Z + 0.6, "frame back", color="0.4", ha="center")
 pTop, pBot = HH + SHIFT_Y, -(HH - SHIFT_Y)
 ax.add_patch(Rectangle((0, pBot), TH, pTop - pBot, fc="#cfe3ff", ec="#1f6fd0", label="panel"))
 ax.axvline(FLANGE_Z0, color="#b5651d", lw=0.8, ls=":")
-ax.text(FLANGE_Z0, HFH + 2, f"shelf {FLANGE_Z0:.2f}\n(0.15 proud)", color="#b5651d", ha="center", fontsize=8)
+ax.text(FLANGE_Z0, HFH + 2, f"shelf {FLANGE_Z0:.2f}\n(behind LCD,\nslot fits 2.60)", color="#b5651d", ha="center", fontsize=8)
 for side in (+1, -1):
     edgeY = side * (HH + side * SHIFT_Y)
     webInnerY = edgeY + side * SEAT_CLR; lipInnerY = edgeY - side * LIP_Y; wallY = side * HFH
@@ -102,6 +102,6 @@ ax.annotate("press", xy=(0.4, 0), xytext=(FLANGE_Z0, 0),
 ax.text(TOTAL_Z * 0.55, HFH - 6, "ears + pockets on FRONT (glass) face", color="#b5651d", ha="center", fontsize=8)
 ax.set_xlim(-1.5, TOTAL_Z + 2); ax.set_ylim(-HFH - 4, HFH + 8)
 ax.set_xlabel("Z (mm)  0=glass -> 15=frame back"); ax.set_ylabel("Y (mm)")
-ax.set_title("Side section: screen ON glass (Z0); rear shelf presses LCD from BEHIND -> glass (total 15mm)")
+ax.set_title("Side section: 2.60 LCD in a 2.75 slot, screen ON glass; shelf BEHIND presses it -> glass (15mm)")
 fig.tight_layout(); fig.savefig("images/brackets_section.png", dpi=130); plt.close(fig)
 print("wrote images/brackets_section.png")

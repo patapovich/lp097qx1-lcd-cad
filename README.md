@@ -65,6 +65,7 @@ protruding **~1.2 mm behind** the rear face (Z −1.20..0) — footprint approxi
 | `bracket_top.step` / `.stl` | top photo-frame mounting bracket (3D print) |
 | `bracket_bottom.step` / `.stl` | bottom photo-frame mounting bracket (3D print) |
 | `bracket_top_thin.stl` / `bracket_bottom_thin.stl` | 5 mm-thick test-print variants (same XY/fit) |
+| `bracket_top_thin_mir.stl` | X-mirrored thin top for the handedness fit-test |
 | `build_brackets.py` | builds the two brackets from `geometry.json` + frame params (cadquery) |
 | `brackets.scad` | parametric OpenSCAD source for the brackets |
 | `verify_brackets.py` | assembly + side-section check images for the brackets |
@@ -98,8 +99,9 @@ OpenSCAD: `openscad -o lcd_panel.stl lcd_panel.scad`.
 Two **3D-printable back-press brackets** that hold the panel **centered in a photo frame** whose
 inner cavity is **182 (W) × 242 (H) mm**. They sit on the panel's **short sides** (top + bottom),
 friction-fit between the frame side walls. There is **no lip in front of the panel** — the screen
-sits **flat on the frame glass**; a rear shelf set **0.15 mm proud** of the panel rear is pushed by
-the frame backing, holding the LCD lightly against the glass.
+sits **flat on the frame glass**; the panel slides into a **2.75 mm slot** (2.60 LCD + 0.15) with the
+rear shelf **behind** it, and the frame backing pushes the bracket so the shelf presses the LCD onto
+the glass.
 
 They **center the VIEW (active) area, not the outline.** The active area is offset from the
 outline center by (−1.30, −0.89), so the panel is shifted (+1.30, +0.89) and the brackets are
@@ -112,8 +114,8 @@ sized to suit — the image lands in the frame center.
 | Bottom-bracket gap (Y-depth) | **17.45 mm** |
 | Left / right gap (open, no bracket) | 8.74 / 6.14 mm |
 | Bracket length (X, friction) | 181.8 mm (182 − 0.2) |
-| Total thickness (Z) | 15.0 mm (front on glass; rear shelf 2.45 → 15) |
-| Rear shelf preload | 0.15 mm proud of the 2.60 panel rear |
+| Total thickness (Z) | 15.0 mm (screen on glass; rear shelf 2.75 → 15) |
+| Panel slot (Z) | 2.75 mm = 2.60 LCD + 0.15 clearance; shelf sits **behind** the LCD |
 | Rear shelf overhang onto border | 3.0 mm (clear of the active area) |
 
 Check: 15.67 + 208.88 + 17.45 = 242.0 ✓. The lug ears are on the LCD **front** (recessed ~0.25 mm),
@@ -123,16 +125,18 @@ which keeps the rear shelf behind the LCD, pressing it **from behind onto the gl
 brackets are **different parts** (gaps and ear pockets differ).
 
 **Thin test-print variants** (`bracket_top_thin.stl`, `bracket_bottom_thin.stl`, Z = 5 mm) have the
-same XY, fit, preload and ear pockets — print one fast/cheap to check orientation + friction before
-committing to the full 15 mm part.
+same XY/fit/slot/ear pockets — print one fast/cheap to check fit + orientation before the full 15 mm
+part. `bracket_top_thin_mir.stl` is the **X-mirrored** thin top: if the ear pockets don't line up with
+your panel, the mirror will — then set `MIRROR_X=True` for the full build.
 
 ![bracket assembly](images/brackets_assembly.png)
 ![bracket section](images/brackets_section.png)
 
 **Print:** PLA/PETG, lay flat — no supports. **Tune the fit** at the top of `build_brackets.py` /
-`brackets.scad`: `FIT_CLR` (frame friction), `SEAT_CLR`/`POCKET_CLR` (panel play), `PRELOAD`
-(forward press — raise for firmer glass contact), `LIP_Y` (rear-shelf grip). `VIEW_CENTER=False`
-centers the outline instead (equal 16.56 mm gaps).
+`brackets.scad`: `FIT_CLR` (frame friction), `SEAT_CLR`/`POCKET_CLR` (panel play), `SLOT_CLR`
+(panel slot Z — lower for tighter glass contact, raise if the LCD is tight), `EAR_Z` (front ear-pocket
+depth), `LIP_Y` (rear-shelf grip), `MIRROR_X` (flip handedness). `VIEW_CENTER=False` centers the
+outline instead (equal 16.56 mm gaps).
 
 **Assemble:** lay the frame face-down on the glass, drop the panel in screen-first (it rests on the
 glass). Push the top + bottom brackets into the end gaps **ear-pockets toward the glass** (the front

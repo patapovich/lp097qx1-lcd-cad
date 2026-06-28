@@ -52,6 +52,10 @@ EAR_ON_BACK = False     # lug ears are on the LCD FRONT (recessed ~0.25mm) -> cl
 EAR_Z   = 0.7           # shallow front pocket depth (clears the ~0.25..0.55 recessed front ear tabs)
 MIRROR_X = False        # negate all X (ear spans + SHIFT_X) if the panel is handed the other way
 THIN_Z  = 5.0           # thickness of the thin test-print variants
+LABEL = True            # deboss "BACK" on the flat rear face = orientation key
+LABEL_TEXT = "BACK"     # this flat face goes to the frame backing; opposite (slot) face -> glass
+LABEL_H = 6.0           # text height (mm)
+LABEL_DEPTH = 0.6       # deboss depth (mm)
 
 LX = (FRAME_W - FIT_CLR) / 2                                 # half bracket length in X
 FLANGE_Z0 = TH + SLOT_CLR                                    # rear shelf front face (2.75) - behind the panel
@@ -118,6 +122,14 @@ def make_bracket(side, tz=TOTAL_Z, mirror=MIRROR_X):
         ay0, ay1 = eymin + SHIFT_Y, eymax + SHIFT_Y      # ear bbox in frame Y
         cut = b(ax0 - EAR_CLR, ax1 + EAR_CLR, ay0 - EAR_CLR, ay1 + EAR_CLR, z0, z1)
         br = br.cut(cut)
+
+    # 6. orientation key: deboss "BACK" into the flat rear face (Z=tz), in the web/gap area.
+    #    The face you set on the print bed = the face that meets the frame backing.
+    if LABEL:
+        cy = (webInnerY + wallY) / 2
+        lab = (cq.Workplane("XY").workplane(offset=tz)
+               .text(LABEL_TEXT, LABEL_H, -LABEL_DEPTH).translate((0, cy, 0)))
+        br = br.cut(lab)
 
     return br
 

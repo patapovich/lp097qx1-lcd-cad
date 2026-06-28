@@ -132,6 +132,19 @@ If a panel is handed the other way, set `MIRROR_X=True` to flip the pockets in X
 Each bracket's total depth into the cavity is the end-gap **plus** the 3 mm shelf overhang behind the
 LCD border (top 15.67+3.0, bottom 17.45+3.0), all behind the screen — the active area stays clear.
 
+### Orientation (important)
+The part is nearly symmetric front-to-back, so it has an explicit key: the flat rear face is
+**debossed "BACK"**. That face goes against the **frame backing**; the opposite face — with the open
+slot + ear pockets — goes against the **glass / LCD**. The rear shelf then sits behind the LCD and the
+frame backing presses it **from behind onto the glass**.
+
+- **Print** the flat **"BACK"** face on the bed (slot + pockets facing up) → the rear-shelf overhang
+  prints support-free. The bed face is the frame-backing face.
+- **Assemble:** frame face-down on the glass; LCD in screen-first (rests on glass); push each bracket
+  into its end gap **pocket/open face toward the glass** (the "BACK" deboss faces out, toward you) so
+  the rear shelf sits behind the LCD edge; close the frame back — its clamping seats the LCD on the glass.
+
+![bracket orientation](images/brackets_orientation.png)
 ![bracket assembly](images/brackets_assembly.png)
 ![ear pocket coverage](images/brackets_ear_coverage.png)
 ![bracket section](images/brackets_section.png)
@@ -139,13 +152,9 @@ LCD border (top 15.67+3.0, bottom 17.45+3.0), all behind the screen — the acti
 **Print:** PLA/PETG, lay flat — no supports. **Tune the fit** at the top of `build_brackets.py` /
 `brackets.scad`: `FIT_CLR` (frame friction), `SEAT_CLR`/`POCKET_CLR` (panel play), `SLOT_CLR`
 (panel slot Z — lower for tighter glass contact, raise if the LCD is tight), `EAR_Z` (front ear-pocket
-depth), `LIP_Y` (rear-shelf grip), `MIRROR_X` (flip handedness). `VIEW_CENTER=False` centers the
-outline instead (equal 16.56 mm gaps).
-
-**Assemble:** lay the frame face-down on the glass, drop the panel in screen-first (it rests on the
-glass). Push the top + bottom brackets into the end gaps **ear-pockets toward the glass** (the front
-ears only fit that way) so each rear shelf sits behind a short edge, then close the frame back — its
-clamping pushes the shelves and seats the LCD on the glass.
+depth), `LIP_Y` (rear-shelf grip), `MIRROR_X` (flip handedness), `LABEL` (the "BACK" deboss).
+`VIEW_CENTER=False` centers the outline instead (equal 16.56 mm gaps). (Assembly + print orientation
+are covered in **Orientation** above.)
 
 ```bash
 cqenv/bin/python build_brackets.py     # -> bracket_top/bottom .step + .stl

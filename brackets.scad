@@ -30,6 +30,10 @@ ear_clr = 1.5;        // margin around an ear pocket
 ear_on_back = false;  // lugs on the LCD FRONT (recessed ~0.25mm) -> clear them on the front face
 ear_z   = 0.7;        // shallow front pocket depth (clears the ~0.25..0.55 recessed front ear tabs)
 mirror_x = false;     // negate all X (ear spans + shift_x) if the panel is handed the other way
+label = true;         // deboss "BACK" on the flat rear face = orientation key
+label_text = "BACK";  // this face -> frame backing; opposite (slot) face -> glass
+label_h = 6.0;        // text height
+label_depth = 0.6;    // deboss depth
 gap     = 0.001;      // tiny boolean overlap
 
 /* ---- ear spans [xmin,xmax,ymin,ymax] from geometry.json ---- */
@@ -72,6 +76,10 @@ module bracket(side) {                 // side = +1 top, -1 bottom
       z1 = ear_on_back ? total_z+gap : ear_z;
       boxc(ex0-ear_clr, ex1+ear_clr, ay0-ear_clr, ay1+ear_clr, z0, z1);
     }
+    if (label)                                          // deboss "BACK" into the flat rear face
+      translate([0, (webInnerY+wallY)/2, total_z-label_depth])
+        linear_extrude(label_depth+gap)
+          text(label_text, size=label_h, halign="center", valign="center");
   }
 }
 
